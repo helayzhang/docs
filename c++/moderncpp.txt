@@ -1,0 +1,218 @@
+####################################
+#####      左值/右值 移动语义
+####################################
+
+C++的构造函数/赋值操作符函数
+    default constructor 默认构造函数 ClassA() {...}
+    constructor         普通构造函数 ClassA(p int) {...}
+    copy constructor    拷贝构造函数 ClassA(const a &ClassA) {...}
+    copy assignment     拷贝赋值操作符函数 ClassA& operator=(const ClassA& a) {...}
+    move constructor    移动构造函数 ClassA(a &&ClassA) {...}
+    move assignment     移动赋值操作符函数 ClassA& operator=(ClassA&& a) {...}
+
+    copy 系列 使用const l-value引用参数
+    move 系列 使用non-const r-value引用参数
+
+    何时调用move系列函数？
+        当定义了move系列函数，且参数是右值（通常情况下，右值是常量或临时变量）
+        特例：自动变量作为函数返回值按值返回时，可以调用move，即使变量时左值（因为return以后该变量即将被销毁，不会再被使用）
+
+    move系列函数是否会由编译器自动生成？
+        通常情况下不会自动生成，除非类没有定义copy构造、copy赋值、move构造、move赋值、析构。但自动生成的move构造和move赋值函数和copy是一样的。
+        因此如果需要move，则需要自定义move构造和move赋值函数。
+
+浅拷贝shallow copy / 深拷贝 deep copy
+    有动态申请内存的class，由编译器自动生成的copy构造函数/赋值函数往往会产生shallow copy，需要override自己实现deep copy
+
+左值和右值
+    左值 可寻址的值
+    右值 所有非左值的值
+
+    int x = 5;
+    int &lref = x;  左值引用
+    int &&rref = 5; 右值引用
+
+左值引用
+    非const左值引用 不能用const左值或右值初始化，能用非const左值初始化
+    const左值引用   能用非const左值、const左值、右值初始化
+
+    !!!const左值引用的作用：
+        允许我们传递任意类型（包括左值或右值）给函数而不必引起拷贝
+
+右值引用
+    非const右值引用 只能用右值初始化
+    const右值引用   只能用右值初始化
+
+    !!!右值引用的作用：
+        1. 把右值的生命期延长为右值引用的生命期(const左值引用也可以做到)
+        2. 非const右值引用允许你修改右值
+        3. 作为函数参数类型，用于识别传入的是右值，来实现move语义
+        4. 为了move一个函数的返回值，函数应当return by value，而外层则可使用右值引用实现move语义
+
+    右值引用和右值的区别：
+        右值引用是一个绑定到一个右值的引用，其本身不一定是右值。
+        例如函数参数int&&a，a本身是左值，a引用一个传入的右值。若需要将a作为右值使用需要std::move(a)
+
+    万能引用和完美转发：
+        同上，一个万能引用如果绑定的是一个右值，则其推导为右值引用，但变量本身是左值，导致传递时丢失了右值属性；
+        一个万能引用如果绑定的是一个左值，则其推导为左值引用，变量本身是左值，传递时我们不应该将其转成右值（调用者不会预期失去变量所有权）；
+        完美转发：一个模板函数，右值引用转成右值，左值引用不变依然是左值
+
+万能引用Universal reference
+    T&& 且T需要类型推导时，为万能引用而非右值引用。又称Forward-reference。
+    当用来初始化万能引用的是一个左值时，万能引用推导为左值引用；
+    当用来初始化万能引用的是一个右值时，万能引用推导为右值引用。
+
+C++里的表达式属性：
+    type
+    value category:
+        C++03: l-values(modifiable l-values, non-modifiable l-values), r-values
+        C++11: add: pr-values, x-values, gl-values
+
+std::move
+    返回入参的右值引用，无论入参是个左值还是右值
+    （对于一个左值，调用std::move相当于宣布放弃对该值的拥有权，不会在其他地方再使用该值）
+
+std::forward
+    入参是左值则返回左值引用，入参是右值则返回右值引用（完美转发）
+
+std::ref
+    将一个引用包装成一个对象reference_wrapper，以便该引用可以被拷贝(赋值操作时，也支持引用拷贝)
+    //引用的特点：
+    //    1. 在声明时必须初始化指向一个变量
+    //    2. 初始化后引用本身无法修改
+    //函数的参数有值传递和引用传递，当函数使用值传递时，由于引用不能拷贝，引用的传递便会中断，这有时不是我们想要的
+    //此时使用std::ref可以让引用支持拷贝
+    //为了传递引用，使用std::ref通过实现了operator=和拷贝构造函数
+
+
+####################################
+#####      智能指针
+####################################
+
+std::auto_ptr C++98 (deprecated in C++11) (removed in C++17)
+    试图通过copy构造函数和copy赋值函数来实现move语义
+    3个问题：
+        1. std::auto_ptr 传入函数参数后，所有权转移到了函数内部，外部函数继续使用会crash（通过简单的赋值/拷贝便会失去所有权，往往和代码编写者的预期不符）
+        2. std::auto_ptr 包装动态数组时依然使用普通delete，造成内存泄漏
+        3. std::auto_ptr 不支持大部分stl标准库容器，标准库容器要求copy而非move
+
+std::unique_ptr C++11 取代std::auto_ptr，禁用copy语义
+std::shared_ptr C++11 copy语义将创造新的shared_ptr C++17支持C-style array
+std::weak_ptr
+
+std::unique_ptr -> std::shared_ptr 右值引用构造函数move到shared_ptr
+std::shared_ptr x-> std::unique_ptr 不安全
+
+std::make_unique() C++14 构造std::unique_ptr的推荐方式（解决函数参数表达式执行顺序不定的风险）
+std::make_shared() C++11 （解决函数参数表达式执行顺序不定的风险）不支持C-style array
+
+
+####################################
+#####     lambada表达式
+####################################
+
+[ capture-list ] ( params ) mutable exception attribute -> ret { body }
+[ capture-list ] ( params ) -> ret {body }
+[ capture-list ] ( params ) { body }
+[ capture-list ] { body }
+    mutable         允许body修改按复制捕获的参数，及调用其非const成员函数
+    exception       为闭包类型的operator()提供异常规定或noexcept子句
+    attribute       为闭包类型的operator()提供属性规定
+    capture-list    捕获参数列表
+        [a, &b]     其中a以const值捕获而b以引用捕获。
+        [this]      以值捕获this指针
+        [&]         以引用捕获所有使用的自动变量，及以引用捕获当前对象，若它存在
+        [=]         以值捕获所有使用的自动变量，及以引用捕获当前对象，若它存在
+        []          无捕获
+    params          参数列表，参数类型可以用auto代表泛型
+    ret             返回类型。若不写，则为函数的return语句所隐喻（或若函数不返回任何值则为void）
+    body            函数体
+
+####################################
+#####     Templates
+####################################
+
+C++编译代码使用template时，不仅需要template声明，也需要template的定义，因此template定义需要全部放在头文件中。否则会有链接错误。（C++编译是每个文件单独执行的）
+优点：简单
+缺点：每个调用template的文件都会生成一份template class，将会增大编译、链接时间，链接器会移除重复定义最终可执行文件大小不会增大。
+这是推荐使用的方式。
+
+强制使编译器实例化template class
+    template class XXX<int>
+
+类型参数/非类型参数
+非类型参数:
+    template <typename T, int size>
+    * int或枚举类型的值（注意：这种参数可用于静态分配内存）
+    * 对象指针或引用
+    * 函数指针或引用
+    * 类成员函数指针或引用
+    * std::nullptr_t
+
+特例化：
+    特例化模板类成员方法：
+    template <>                         —— 指明是template方法，但没有类型参数
+    void Storage<double>::print() {     —— 特例化模板类型参数
+    }
+
+    特例化整个模板类：
+    template <>                         —— 指明是template方法，但没有类型参数
+    class Storage8<bool> {              —— 特例化模板类型参数
+    }
+
+部分特例化（仅限整个模板类，C++14无法特例化模板函数或模板类成员函数，但可通过模板类继承+子类部分特例化+子类override基类成员函数来实现）：
+    template <int size>
+    void print(StaticArray<char, size>& array) {
+    }
+
+    部分特例化：针对指针类型
+    template <typename T>
+    class Storage<T*> {
+    }
+
+    部分特例化+特例化：优先使用完整特例化->部分特例化
+    template <typename T>
+    class Storage<T*> {
+    }
+    tempate <>
+    Storage<char*>::Storage(char* value) {
+    }
+
+
+####################################
+#####     override/final关键字
+####################################
+
+继承控制关键字
+
+override 用于类成员函数，明确表示该函数是对基类中一个虚函数的重载，并检查签名是否一致
+final 用于类，阻止从类继承该类；用于类成员虚函数，阻止派生类重载该虚函数
+
+class A
+{
+public:
+    virtual void func() const;
+};
+class B : A
+{
+public:
+    void func() const override final; // OK func是对基类func的重载，但阻止B的派生类再重载func
+};
+
+
+========== C++ 11
+1. Lambda表达式
+2. auto自动类型和decltype类型推导
+3. 统一大括号初始化语法
+4. default, delete 函数
+5. nullptr
+6. 委托构造函数 构造函数可调用其他构造函数
+7. 右值引用
+8. 标准库
+    TR1容器 unordered_set, unordered_map, unordered_multiset, unordered_multimap
+    线程库 thread
+    智能指针 shared_ptr unique_ptr
+    算法 all_of() any_of() none_of() copy_n() iota()
+
+========== C++ 14

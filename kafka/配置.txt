@@ -1,0 +1,24 @@
+kafka server：Message was too large ，server rejected it to avoid allocation
+
+message.max.bytes=200000000
+replica.fetch.max.bytes=204857600
+fetch.message.max.bytes=204857600
+
+================================================================
+
+Producer 生产消息
+
+	不确认：RequiredAcks = NoResponse
+	本地确认：RequiredAcks = WaitForLocal leader写入即返回成功 
+	全确认：RequiredAcks = WaitForAll leader和所有replica全部写入才返回成功
+
+	默认（WaitForLocal）
+
+Offset 更新策略
+
+	enable.auto.commit=true 自动提交 更新的频率根据参数 auto.commit.interval.ms
+		这种方式也被称为【at most once】，fetch到消息后就可以更新offset，无论是否消费成功。
+
+	enable.auto.commit=false 手动提交
+		这种方式称为【at least once】。fetch到消息后，等消费完成再调用方法【consumer.commitSync()】，手动更新offset；
+		如果消费失败，则offset也不会更新，此条消息会被重复消费一次。

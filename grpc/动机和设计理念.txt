@@ -1,0 +1,41 @@
+https://grpc.io/blog/principles
+
+Services not Objects, Messages not References 面向服务而非对象，以消息交互而非引用
+
+Coverage & Simplicity 覆盖主流平台，容易被部署
+
+Free & Open 开放，自由
+
+Interoperability & Reach 协同能力，可传达
+
+General Purpose & Performant 用途广泛
+
+Layered 分层的设计
+
+Payload Agnostic 对内容不限制，允许支持各类编码
+
+Streaming 流式传输
+
+Blocking & Non-Blocking 同时支持同步和异步处理
+
+Cancellation & Timeout 可取消、超时机制
+
+Lameducking 优雅的结束
+
+Flow-Control 流控
+
+Pluggable 插件式 （协议只是基础架构中的一小部分，大型分布式系统还需要安全、健康检查、负载均衡、失效备援、模拟、跟踪、日志等等，实现允许提供插件式扩展）
+
+Extensions as APIs 扩展API
+
+Metadata Exchange 
+
+Standardized Status Codes
+
+
+
+Why is gRPC better than any binary blob over HTTP/2?
+	This is largely what gRPC is on the wire. However gRPC is also a set of libraries that will provide higher-level features consistently across platforms that common HTTP libraries typically do not. Examples of such features include:
+	interaction with flow-control at the application layer
+	cascading call-cancellation
+	load balancing & failover

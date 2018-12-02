@@ -1,0 +1,16 @@
+#!/usr/bin/expect
+trap {
+ set rows [stty rows]
+ set cols [stty columns]
+ stty rows $rows columns $cols < $spawn_out(slave,name)
+} WINCH
+
+set server xxx.xxx.xxx.xxx
+set user root
+set passwd *******
+spawn ssh $user@$server
+expect -re "password:"
+send "${passwd}\r"
+
+expect -re "$"
+interact

@@ -1,0 +1,104 @@
+测试环境：
+	CPU: 1.3GHz Intel Core i5
+	内存: 4GB DDR3
+	磁盘: SSD
+	4线程：利用多核CPU
+
+参数：
+	Producer 最大消息大小 100K
+	Producer Partitioner NewRoundRobinPartitioner
+	Producer RequiredAcks WaitForLocal
+
+几个坑：
+	kafka报：kafka server：Message was too large ，server rejected it to avoid allocation
+	解决：
+		message.max.bytes=200000000
+		replica.fetch.max.bytes=204857600
+		fetch.message.max.bytes=204857600
+
+	kafka报：In the middle of a leadership election, there is currently no leader for this partition and hence it is unavailable for writes.
+	解决：
+		1. docker compose配置多个kafka broker时，host不能用localhost，填本机ipconfig getifaddr en0地址
+		2. kafka producer生产消息时不能重复使用同一个message指针发送消息
+
+同步发送（逐条）
+==============================================================================================================================
+
+		3个broker 3个分区 不复制 4线程productor 10万条
+		total time: 129.656143s
+
+同步发送（合并N条）
+==============================================================================================================================
+
+		3个broker 3个分区 不复制 4线程productor 
+
+		合并100条（10万条）
+		total time: 54.645478s —— 0.18w/s
+
+		合并1000条（10万条）
+		total time: 5.849969s -- 1.71w/s
+
+		合并10000条（1000万条）
+		total time: 70.145966s -- 14.28w/s
+
+异步发送
+==============================================================================================================================
+
+		1个broker 1个分区 4线程productor 1000万条
+			chan 3, succ: 2335697, error: 0
+			chan 0, succ: 2621059, error: 0
+			chan 2, succ: 2501630, error: 0
+			chan 1, succ: 2541623, error: 0
+			total time: 56.194396s
+
+		1个broker 3个分区 4线程productor 1000万条
+			chan 1, succ: 2329816, error: 0
+			chan 2, succ: 2489810, error: 0
+			chan 3, succ: 2573209, error: 0
+			chan 0, succ: 2607174, error: 0
+			total time: 60.520812s
+
+		================================================================
+		
+		2个broker 2个分区 不复制 4线程productor 1000万条
+
+			chan 1, succ: 2271816, error: 0
+			chan 2, succ: 2415061, error: 0
+			chan 0, succ: 2700127, error: 0
+			chan 3, succ: 2613005, error: 0
+			total time: 56.380247s
+
+			chan 0, succ: 2488655, error: 0
+			chan 1, succ: 2548293, error: 0
+			chan 2, succ: 2508074, error: 0
+			chan 3, succ: 2454985, error: 0
+			total time: 38.840429s
+
+			chan 3, succ: 2519793, error: 0
+			chan 1, succ: 2482121, error: 0
+			chan 2, succ: 2407609, error: 0
+			chan 0, succ: 2590488, error: 0
+			total time: 41.235081s
+
+		================================================================
+
+		3个broker 3个分区 不复制 4线程productor 1000万条
+
+			chan 0, succ: 2334441, error: 0
+			chan 3, succ: 2517081, error: 0
+			chan 1, succ: 2592206, error: 0
+			chan 2, succ: 2556283, error: 0
+			total time: 36.908125s
+
+			chan 1, succ: 2518414, error: 0
+			chan 0, succ: 2425824, error: 0
+			chan 2, succ: 2521154, error: 0
+			chan 3, succ: 2534619, error: 0
+			total time: 36.949145s
+
+
+Consumer性能测试
+==============================================================================================================================
+		2个broker 2个分区 不复制 单个consumer 1000万条
+			total time: 51.640187s
+

@@ -1,0 +1,37 @@
+CAP理论：
+
+    Consistency: Every read receives the most recent write or an error
+    Availability: Every request receives a (non-error) response – without the guarantee that it contains the most recent write
+    Partition tolerance: The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes
+
+	C（Consistency）一致性：在分布式系统中，数据一致更新，所有数据变动都是同步的；
+	A（Availability）可用性：分布式系统中，部分节点故障，系统是否依然可响应客户端请求（对数据更新具备高可用性）；
+	P（Partition tolerance）分区容错性：分区是相对于通信的时延要求来讲，指在时延要求内部分节点与其它节点联系不可达，在该情况下系统是否依然可用（可靠性）。
+        该场景下不同于节点宕机情况，可能由于网络交换器故障，使形成不同分区，分区不可达，或者是当前延迟过大，超过了设定的值。
+
+    一致性C可依据程度分为：
+	    强一致性（即时一致性）：所有的副本更新成功才返回；
+	    弱一致性：不能保证即时，存在一个“不一致性窗口”；
+	    最终一致性：是弱一致性的一种特例。经过一个不一致窗口然后到达一致状态。不一致窗口的大小可能依赖于这些因素：交互延迟、系统的负载、以及复制技术中副本的个数。几种方式可简单实现，比如增加update节点来以binlog方式更新，为防止单一节点失效，可以设置多个update节点，然后update节点将会以binlog更新所有节点。例如比特币系统，共识算法即采用的是最终一致性，为了保证其可用性。
+
+BASE的三个性质如下：
+
+	Basically Available：基本可用，支持分区失败，例如sharding碎片划分数据库；
+	Soft state：软状态，状态可以有一段时间不同步；
+	Eventually consistent：最终一致性
+	BASE采用的是弱一致性，来提升C与P上的保证。NoSQL运动的主题其实是创造各种可用性优先、数据一致性其次的方案。
+
+ACID的四个性质如下：
+
+	Atomicity（原子性）：一个事务中所有操作都必须全部完成，要么全部不完成。高层次的原子操作实际上可以简化分区的恢复；
+	Consistency（一致性）：相比如CAP中的C更宽泛，指事务不能破坏任何数据库规则，要保持某些不变性约束，如键的唯一性；
+	Isolation（隔离性）：事务将假定只有它自己在操作数据库，彼此不知晓；
+	Durability（持久性）： 在事务完成以后，该事务所对数据库所作的更改便持久的保存在数据库之中，并不会被回滚。
+	传统数据库采用这种强事务模型。
+
+===================================================
+
+单点故障 -> 数据复制 -> 提高可用性
+				     -> 提升性能（负载均衡）
+				     -> 数据一致性问题
+

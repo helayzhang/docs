@@ -1,0 +1,81 @@
+Topic
+
+	Kafka将消息种子(Feed)分门别类， 每一类的消息称之为话题(Topic).
+
+Producer
+
+	发布消息的对象称之为话题生产者(Kafka topic producer)
+
+Consumer
+
+	订阅消息并处理发布的消息的种子的对象称之为话题消费者(consumers)
+
+Broker
+
+	已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理(Broker). 消费者可以订阅一个或多个话题，并从Broker拉数据，从而消费这些已发布的消息。
+
+=========================================================
+
+启动ZK
+	
+	./bin/zookeeper-server-start.sh config/zookeeper.properties
+
+启动Kafka(broker)
+
+	./bin/kafka-server-start.sh config/server.properties
+
+创建Topic
+
+	./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic topic_test
+
+	./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 2 --topic test
+	Topic的名字叫"test",只有一个分区和一个备份。
+
+	./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 3 --topic testtopic
+	3个备份。
+
+查看Topic列表
+
+	./bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+查看Topic描述
+	
+	./bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic test
+	./bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic
+
+生产消息
+
+	./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+	./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic topic_test
+
+	./bin/kafka-console-producer.sh --broker-list localhost:9092 localhost:9093 localhost:9094 --topic test1ccc
+
+消费消息
+
+	./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic topic_test 
+	./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic my-replicated-topic
+
+	指定consumer group
+	./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --consumer-property group.id=test
+
+	多个broker
+	./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 localhost:9093 localhost:9094 --from-beginning --topic test1ccc
+
+	指定分区
+	./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 localhost:9093 localhost:9094 --partition 0 --from-beginning --topic test
+
+	------------for 生产环境 kafka 0.8
+	./bin/kafka-console-consumer.sh --zookeeper 172.16.45.50:2181 172.16.45.51:2181 172.16.45.52:2181 --topic log_infr_debug
+
+	------------for 测试环境
+	./bin/kafka-console-consumer.sh --bootstrap-server 139.129.96.132:9093 --topic log_infr_debug
+
+	------------for 本地环境
+	./bin/kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 localhost:9093 localhost:9094 --topic log_infr_debug
+
+	./bin/kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9192 localhost:9193 localhost:9194 --topic log_infr_debug
+
+
+删除Topic内容
+
+	./bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic test

@@ -1,0 +1,42 @@
+Hashes 实现是个哈希表
+
+	HGET O(1)
+	HSET O(1)
+	HEXISTS O(1)
+	HLEN O(1)
+
+Keys
+
+Lists 实现是个链表
+
+	LPUSH LPOP O(1)
+	LRANGE O(S+N) S range起始点离头部的距离 N range的宽度
+	LSET O(N) N list长度，如果设置都或尾是O(1)
+	LTRIM O(N) N 移除的个数
+	LINSERT O(N) N 遍历的长度
+	LINDEX O(N)
+	RPUSH RPOP O(1)
+
+Sets
+	
+	SADD O(1)
+	SCARD O(1)
+	SISMEMBER O(1)
+	SMEMBERS O(N)
+	SPOP O(1)
+	SRANDMEMBER O(1)
+	SREM O(N) N 移除的个数
+	SINTER O(N*M) 
+
+Sorted Sets
+
+	ZADD O(log(N)) N是SS总元素数量
+	ZCARD O(1)
+	ZSCORE O(1)
+	ZCOUNT O(log(N)) N是SS总元素数量
+	ZINCRBY O(log(N)) N是SS总元素数量
+	ZRANGE O(log(N)+M) N是SS总元素数量 M是返回元素个数
+	ZRANK O(log(N)) N是SS总元素数量
+	ZREM O(log(N)*M) N是SS总元素数量 M是删除元素个数
+
+SCAN, SSCAN, HSCAN, ZSCAN

@@ -1,0 +1,5 @@
+首先，从go get -u github.com/kardianos/govendor下载govendor工具到本地。
+govendor使用时，必须保证你的工程项目放在GOPATH/src目录下。
+在Go命令行执行govendor init，自动生成vendor文件夹（存放你项目需要的依赖包）和vendor.json文件（有关依赖包的描述文件）。
+这时你查看vendor.json文件时，可能还没有什么内容。此时你需要将GOPATH文件夹中的包添加到vendor目录下，只需执行命令govendor add +external或者govendor add +e。
+此时看到的vendor.json文件就比之前多了许多

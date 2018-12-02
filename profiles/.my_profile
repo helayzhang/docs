@@ -1,0 +1,34 @@
+export LC_CTYPE="en_US.UTF-8"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export LANGUAGE="zh:en_US:en"
+
+export CLICOLOR=1
+
+export GIT_TERMINAL_PROMPT=1
+
+export ETCDCTL_API=3
+
+export GOPATH=~/codes/go
+
+export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH
+export PATH=/usr/local/mysql/bin:$PATH
+export PATH=/usr/local/opt/git/bin:$PATH
+export PATH=/usr/local/opt/universal-ctags/bin:$PATH
+export PATH=/usr/local/opt/gettext/bin:$PATH
+export PATH=/usr/local/opt/flex/bin:$PATH
+export PATH=/usr/local/opt/bison/bin:$PATH
+export PATH=/usr/local/opt/krb5/bin:$PATH
+export PATH=/usr/local/opt/opendht/bin:$PATH
+export PATH=/Applications/MacVim.app/Contents/bin:$PATH
+
+alias grep='ggrep'
+alias libtoolize='glibtoolize'
+
+alias ycm='/Users/zhanghao/.vim/plugged/YCM-Generator/config_gen.py'
+
+alias fbthrift='thrift1 --templates ~/codes/third_party/fbthrift/thrift/compiler/generate/templates'
+
+alias gopath='export GOPATH=$(pwd)'
+alias gopath-reset='export GOPATH=~/codes/go'
+

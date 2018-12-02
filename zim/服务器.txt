@@ -1,0 +1,47 @@
+服务器结构
+
+Server Service —— 接入层
+
+Session Service
+
+ChatRoom Service —— 聊天室服务
+
+Misc Service - 其他特殊功能服务
+
+Data Service —— 持久化存储数据层
+
+common - 公共api或模块
+
+========================================
+
+skynet - rpc框架核心组件 定义了基于RPC的服务注册、启动、服务调用、负载均衡等行为
+
+service - 一个实现skynet rpc的服务，每个服务拥有自己的服务名和版本号，服务启动后便开始监听自己提供服务的RPC网络端口，并向moniter服务注册，定期上报状态
+
+monitor service - 服务注册中心，本身就是一个实现skynet rpc的服务，全局唯一，维护全局名字服务和状态，所有其他服务启动后都需要向monitor服务进行注册和定期上报
+	
+	维护key-value配置：
+
+	UUID  - 服务配置
+			服务名
+			版本号
+			UUID
+			环境
+			网络地址
+			上一次上报时间
+
+	定时检查服务健康状态：上报间隔超时的服务，从在线状态删除
+
+	其他服务从monitor service获取服务信息：
+		根据服务名+版本号，RPC monitor 服务器获得一个符合的服务器
+
+server service - 接入服务
+
+session service - 会话状态管理服务
+
+charroom service
+
+misc service
+
+data service
+

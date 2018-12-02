@@ -1,0 +1,40 @@
+Key Properties of the OLAP scenario
+
+    The vast majority of requests are for read access.
+    最大部分请求是读，而非写。
+
+    Data is updated in fairly large batches (> 1000 rows), not by single rows; or it is not updated at all.
+    数据要么是大批量更新，要么从不更新。
+
+    Data is added to the DB but is not modified.
+    数据被添加到DB，但不会修改。
+
+    For reads, quite a large number of rows are extracted from the DB, but only a small subset of columns.
+    查询时，涉及大量行，但只涉及一小部分列。
+
+    Tables are "wide," meaning they contain a large number of columns.
+    表很宽，意味着一行有大量的列。
+
+    Queries are relatively rare (usually hundreds of queries per server or less per second).
+    查询数是相对较少的（数百qps）
+
+    For simple queries, latencies around 50 ms are allowed.
+    对于一个简单查询，允许50ms左右的延迟。
+
+    Column values are fairly small: numbers and short strings (for example, 60 bytes per URL).
+    列数据较小，数字、短字符串。
+
+    Requires high throughput when processing a single query (up to billions of rows per second per server).
+    对单个查询的吞吐量有要求（每台服务每秒上亿行数据）
+
+    Transactions are not necessary.
+    事务不是必须的。
+
+    Low requirements for data consistency.
+    对数据一致性要求降低。
+
+    There is one large table per query. All tables are small, except for one.
+    有一张大表，其他表都是小表。
+
+    A query result is significantly smaller than the source data. In other words, data is filtered or aggregated, so the result fits in a single server's RAM.
+    查询结果相比原始数据大小小很多。数据是过滤、聚合后的，可放入单个服务器的RAM。

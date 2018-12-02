@@ -1,0 +1,68 @@
+Docker 项目的目标是实现轻量级的操作系统虚拟化解决方案。 
+Docker 的基础是 Linux 容器（LXC）等技术。
+传统虚拟机Virtual Mechines不仅包含应用和各种库，还包含完整的Guest OS，其虚拟化在硬件层面实现。
+Docker只包含应用和其依赖，相当于在本地OS的用户空间上运行的进程，并和其他容器复用内核，其在操作系统层面虚拟化。容器的核心为所执行的应用程序，所需要的资源都是应用程序运行所必需的。除此之外，并没有其它的资源。
+
+为什么要使用 Docker？
+	作为一种新兴的虚拟化方式，Docker 跟传统的虚拟化方式相比具有众多的优势。
+
+	首先，Docker 容器的启动可以在秒级实现，这相比传统的虚拟机方式要快得多。 其次，Docker 对系统资源的利用率很高，一台主机上可以同时运行数千个 Docker 容器。
+
+	容器除了运行其中应用外，基本不消耗额外的系统资源，使得应用的性能很高，同时系统的开销尽量小。传统虚拟机方式运行 10 个不同的应用就要起 10 个虚拟机，而Docker 只需要启动 10 个隔离的应用即可。
+
+	更快速的交付和部署
+
+	更高效的虚拟化
+
+	更轻松的迁移和扩展
+
+	更简单的管理
+
+	对比传统虚拟机总结
+	特性			容器				虚拟机
+	启动			秒级				分钟级
+	硬盘使用		一般为 MB		一般为 GB
+	性能			接近原生			弱于
+	系统支持量	单机支持上千个容器	一般几十个
+
+Docker file
+	FROM 源镜像
+	MAINTAINER 维护者
+	RUN 执行命令
+	VOLUME 挂载数据目录
+	ADD 复制本地文件到镜像
+	EXPOSE 开放端口
+	CMD 容器启动后执行的程序
+
+	docker run 从一个镜像启动一个容器
+		-t 选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上
+		-i 则让容器的标准输入保持打开
+		-d 守护态运行
+		-v 挂载数据目录
+		--volumes-from 共享其他容器的数据目录
+		-P 随机映射一个 49000~49900 的端口到内部容器开放的网络端口
+		-p 可以指定要映射的端口，并且，在一个指定端口上只可以绑定一个容器
+		--link 容器互联
+	docker log 获取容器的输出
+	docker start 将一个已终止的容器启动运行
+	docker stop 终止容器运行
+	docker restart 终止并重启一个容器
+	docker attach 进入一个后台运行的容器
+	docker port 查看端口映射配置
+
+	docker images 列出镜像
+	docker ps 列出容器
+		-a 列出已exited的容器
+	docker tag 修改tag
+	docker commit 提交镜像
+	docker push 上传镜像
+	docker pull 下载镜像
+	docker save 保存镜像到本地文件
+	docker load 从导出的本地文件加载镜像
+	docker export 导出容器
+	docker import 导入本地容器文件为镜像
+	docker rm 删除容器
+	docker rmi 删除镜像
+	
+获得容器IP地址：
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' <容器名>

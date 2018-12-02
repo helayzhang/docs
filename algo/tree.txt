@@ -1,0 +1,24 @@
+B-Tree
+	https://oss-cn-hangzhou.aliyuncs.com/yqfiles/c57481d5e7f503d823421ba75c9bcad07bd0fd6d.png
+	* key和value成对存储
+	* 度的概念
+	* 每个节点存储多个key和指针，指针在key的两边，指针数=key数+1
+	* 节点最左侧的指针指向的节点，其key都小于节点第一个key
+	* 节点最右侧的指针指向的节点，其key都大于节点第一个key
+
+B+Tree
+	https://oss-cn-hangzhou.aliyuncs.com/yqfiles/ee21eae66183094d5e901bcf4e76b03568c97078.png
+	* 内节点不存储data，只存储key；叶子节点不存储指针
+
+B*Tree
+	https://oss-cn-hangzhou.aliyuncs.com/yqfiles/00284d45bffa62a26c3c044b1d96a8748fffe063.png
+	* 每个叶子节点增加一个指向相邻叶子节点的指针（增加顺序访问）
+
+PostgreSQL B-Tree
+	* Lehman & Yao Algorithm算法优化 添加了一个右指针(like B+Tree)
+	* upper bound value（解决了分裂的并发问题）
+
+SB-Tree
+
+LSM-Tree (Log-Structured Merge-Tree)
+

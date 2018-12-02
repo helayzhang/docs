@@ -1,0 +1,44 @@
+call plug#begin('~/.vim/plugged')
+"vim doc
+Plug 'yianwillis/vimcdoc'
+
+"color
+Plug 'tomasr/molokai'
+Plug 'octol/vim-cpp-enhanced-highlight'
+
+"search
+Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
+Plug '/usr/local/opt/fzf'
+
+"golang autocomplete
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
+Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+
+"c/cpp autocomplete
+Plug 'Valloric/YouCompleteMe'           "code auto complete - many language
+Plug 'Raimondi/delimitMate'             "code auto complete - ( [ { 
+Plug 'Chiel92/vim-autoformat'           "code auto format
+Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+
+"google code format
+Plug 'google/vim-codefmt'
+Plug 'google/vim-maktaba'
+Plug 'google/vim-glaive'
+
+"Alternate Files quickly .c --> .h
+Plug 'vim-scripts/a.vim'
+
+"markdown
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+
+"tags - auto gen tags
+Plug 'ludovicchabant/vim-gutentags'     
+
+"async run shell
+Plug 'skywind3000/asyncrun.vim'         
+
+Plug 'scrooloose/nerdtree'              "tree - file choose
+Plug 'scrooloose/nerdcommenter'         "code comment
+
+call plug#end()

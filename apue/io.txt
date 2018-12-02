@@ -1,0 +1,33 @@
+标准IO：带缓冲的IO
+
+	目的：提供缓冲是为了尽可能减少read、write调用次数
+
+	缓冲
+		全缓冲：缓冲区填满才flush
+		行缓冲：缓冲区填满或遇到换行符flush
+		不带缓冲：不进行缓冲
+
+		默认情况：
+			stderr 不带缓冲
+			与终端关联的IO 行缓冲
+			其他 全缓冲
+
+	fputc 每次往缓冲写一个字符
+	fputs 每次往缓冲写一行
+	注意：fputc fputs 底层缓冲依然是三种机制，例如都是行缓冲。区别可能体现在用户态由于循环次数不同引起的函数调用次数不同，底层调用read、write的次数则是基本接近的。
+
+一些实测：
+MACBOOK AIR SSD，1.14GB文件读入并写入新文件。
+	fgetc+fputc：
+		real:		 137.36
+		user:		 133.37
+		sys:		   2.11
+		child user:	   0.00
+		child sys:	   0.00
+	fgets+fputs:
+		real:		   5.48
+		user:		   1.38
+		sys:		   1.48
+		child user:	   0.00
+		child sys:	   0.00
+	使用fgets+fputs，1秒可读+写200+M/s
