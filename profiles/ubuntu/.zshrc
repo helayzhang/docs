@@ -100,13 +100,8 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 #
+DEFAULT_USER=root
+
 if [ -f ~/.my_profile ]; then
     source ~/.my_profile
 fi
-
-DEFAULT_USER=root
-
-HISTSIZE=100000
-SAVEHIST=100000
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

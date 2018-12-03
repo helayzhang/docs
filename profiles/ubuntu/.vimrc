@@ -72,12 +72,12 @@ let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml']
 nnoremap <silent> <F1> :AsyncRun -raw -cwd=<root> touch .root && mkdir -p build <cr>
 
 " F2 生成ycm
-" nnoremap <silent> <F2> :AsyncRun -raw -cwd=<root> /Users/zhanghao/.vim/plugged/YCM-Generator/config_gen.py -f -v . <cr>
+nnoremap <silent> <F2> :AsyncRun -raw -cwd=<root> /root/.vim/plugged/YCM-Generator/config_gen.py -f -v . <cr>
 
 " F3 格式化代码
 
 " F4 重新生成Makefile cmake
-nnoremap <silent> <F4> :AsyncRun -raw -cwd=<root> rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ .. && cd .. && cp -rf build/compile_commands.json . <cr>
+nnoremap <silent> <F4> :AsyncRun -raw -cwd=<root> rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ .. <cr>
 
 " F5 运行当前文件
 " 参数 `-raw` 表示输出不用匹配错误检测模板 (errorformat) ，直接原始内容输出到 quickfix 窗口
@@ -114,7 +114,8 @@ let g:ycm_server_log_level = 'info'
 let g:ycm_min_num_identifier_candidate_chars = 2
 set completeopt=menu,menuone
 let g:ycm_collect_identifiers_from_tags_files = 1           " 开启 YCM 基于标签引擎
-let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+"let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf=0
 
 let g:ycm_min_num_of_chars_for_completion=2	                  " 从第2个键入字符就开始罗列匹配项
@@ -299,6 +300,7 @@ au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn} set filetype=markdown 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set encoding=utf-8
+set t_Co=256
 set background=dark
 set showcmd
 set number

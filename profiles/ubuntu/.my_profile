@@ -18,5 +18,12 @@ alias vi='vim'
 alias grep="grep --color=auto"
 alias gopath='export GOPATH=$(pwd)'
 alias gopath-reset='export GOPATH=~/codes/go'
+alias ycm='/root/.vim/plugged/YCM-Generator/config_gen.py'
 
+HISTSIZE=100000
+SAVEHIST=100000
 
+ulimit -n 1000000
+ulimit -c unlimited
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
