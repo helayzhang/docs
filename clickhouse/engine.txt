@@ -1,113 +1,92 @@
-ENGINE [=] MergeTree(date-column [, sampling_expression], (primary, key), index_granularity)
+=====================
+MergeTree
+=====================
+    MergeTree以及*MergeTree家族
 
-CREATE TABLE `ontime` (
-  `Year` UInt16,
-  `Quarter` UInt8,
-  `Month` UInt8,
-  `DayofMonth` UInt8,
-  `DayOfWeek` UInt8,
-  `FlightDate` Date,
-  `UniqueCarrier` FixedString(7),
-  `AirlineID` Int32,
-  `Carrier` FixedString(2),
-  `TailNum` String,
-  `FlightNum` String,
-  `OriginAirportID` Int32,
-  `OriginAirportSeqID` Int32,
-  `OriginCityMarketID` Int32,
-  `Origin` FixedString(5),
-  `OriginCityName` String,
-  `OriginState` FixedString(2),
-  `OriginStateFips` String,
-  `OriginStateName` String,
-  `OriginWac` Int32,
-  `DestAirportID` Int32,
-  `DestAirportSeqID` Int32,
-  `DestCityMarketID` Int32,
-  `Dest` FixedString(5),
-  `DestCityName` String,
-  `DestState` FixedString(2),
-  `DestStateFips` String,
-  `DestStateName` String,
-  `DestWac` Int32,
-  `CRSDepTime` Int32,
-  `DepTime` Int32,
-  `DepDelay` Int32,
-  `DepDelayMinutes` Int32,
-  `DepDel15` Int32,
-  `DepartureDelayGroups` String,
-  `DepTimeBlk` String,
-  `TaxiOut` Int32,
-  `WheelsOff` Int32,
-  `WheelsOn` Int32,
-  `TaxiIn` Int32,
-  `CRSArrTime` Int32,
-  `ArrTime` Int32,
-  `ArrDelay` Int32,
-  `ArrDelayMinutes` Int32,
-  `ArrDel15` Int32,
-  `ArrivalDelayGroups` Int32,
-  `ArrTimeBlk` String,
-  `Cancelled` UInt8,
-  `CancellationCode` FixedString(1),
-  `Diverted` UInt8,
-  `CRSElapsedTime` Int32,
-  `ActualElapsedTime` Int32,
-  `AirTime` Int32,
-  `Flights` Int32,
-  `Distance` Int32,
-  `DistanceGroup` UInt8,
-  `CarrierDelay` Int32,
-  `WeatherDelay` Int32,
-  `NASDelay` Int32,
-  `SecurityDelay` Int32,
-  `LateAircraftDelay` Int32,
-  `FirstDepTime` String,
-  `TotalAddGTime` String,
-  `LongestAddGTime` String,
-  `DivAirportLandings` String,
-  `DivReachedDest` String,
-  `DivActualElapsedTime` String,
-  `DivArrDelay` String,
-  `DivDistance` String,
-  `Div1Airport` String,
-  `Div1AirportID` Int32,
-  `Div1AirportSeqID` Int32,
-  `Div1WheelsOn` String,
-  `Div1TotalGTime` String,
-  `Div1LongestGTime` String,
-  `Div1WheelsOff` String,
-  `Div1TailNum` String,
-  `Div2Airport` String,
-  `Div2AirportID` Int32,
-  `Div2AirportSeqID` Int32,
-  `Div2WheelsOn` String,
-  `Div2TotalGTime` String,
-  `Div2LongestGTime` String,
-  `Div2WheelsOff` String,
-  `Div2TailNum` String,
-  `Div3Airport` String,
-  `Div3AirportID` Int32,
-  `Div3AirportSeqID` Int32,
-  `Div3WheelsOn` String,
-  `Div3TotalGTime` String,
-  `Div3LongestGTime` String,
-  `Div3WheelsOff` String,
-  `Div3TailNum` String,
-  `Div4Airport` String,
-  `Div4AirportID` Int32,
-  `Div4AirportSeqID` Int32,
-  `Div4WheelsOn` String,
-  `Div4TotalGTime` String,
-  `Div4LongestGTime` String,
-  `Div4WheelsOff` String,
-  `Div4TailNum` String,
-  `Div5Airport` String,
-  `Div5AirportID` Int32,
-  `Div5AirportSeqID` Int32,
-  `Div5WheelsOn` String,
-  `Div5TotalGTime` String,
-  `Div5LongestGTime` String,
-  `Div5WheelsOff` String,
-  `Div5TailNum` String
-) ENGINE = MergeTree(FlightDate, (Year, FlightDate), 8192)
+    主要功能：
+        · 数据存储按主键排序
+        · 支持partition - 提升操作和查询性能
+        · 支持数据备份 - ReplicatedMergeTree家族
+        · 支持数据采样
+
+    ENGINE [=] MergeTree() [PARTITION BY expr] [ORDER BY expr] [SAMPLE BY expr] [SETTINGS name=value, ...]
+        · ORDER BY - 主键（可以多个列/表达式，主键允许重复）
+        · PARTITION BY - 分区键
+        · SAMPLE BY - 采样列/表达式
+        · SETTINGS - 额外参数设置
+            index_granularity 索引粒度，索引标记之间的间隔，默认8192
+
+    Example:
+        ENGINE MergeTree() PARTITION BY toYYYYMM(EventDate) ORDER BY (CounterID, EventDate, intHash32(UserID)) SAMPLE BY intHash32(UserID) SETTINGS index_granularity=8192
+
+    数据存储：
+        数据插入时会创建不同的数据parts，每个parts内的数据按主键排序。例如主键是(CounterID, Date)，数据是按CounterID排序的，同样CounterID的数据会按Date排序。
+        属于不同partition的数据会写入不同的parts。CK在后台执行数据parts的merge操作，使得存储更高效。但不同partition的parts不会merge。
+        CK会为每个part创建一个索引文件，其中包含每个索引行(mark)的主键值。索引行的编号是n * index_granularity。n的最大值等于最大行数除以index_granularity。除主键以外的每一列也会记录同样索引行上的marks，因此可以直接对每一列查找数据。
+
+        MergeTree设计用来用一个单一的大表来持续存入小块的数据。
+
+    主键和索引：
+        以(CounterID, Date)主键为例，索引和数据排序模拟如下：
+        Whole data:     [-------------------------------------------------------------------------]
+        CounterID:      [aaaaaaaaaaaaaaaaaabbbbcdeeeeeeeeeeeeefgggggggghhhhhhhhhiiiiiiiiikllllllll]
+        Date:           [1111111222222233331233211111222222333211111112122222223111112223311122333]
+        Marks:           |      |      |      |      |      |      |      |      |      |      |
+                        a,1    a,2    a,3    b,3    e,2    e,3    g,1    h,2    i,1    i,3    l,3
+        Marks numbers:   0      1      2      3      4      5      6      7      8      9      10
+
+        查询CounterID in ('a', 'h')，CK读取数据marks范围：[0,3) 和[6,8)
+        查询CounterID IN ('a', 'h') AND Date = 3，CK读取数据marks范围：[1,3)和[7,8)
+        查询Date = 3，CK读取数据marks范围：[1,10]
+
+        稀疏索引支持读取额外的数据，当搜索一个单一主键时，最多2 * index_granularity行额外数据会被读取。CK的性能不会降级当index_granularity = 8192。
+
+        稀疏索引允许你处理大量的行，并且索引永远会被存储在RAM中。
+
+        CK的主键不要求是唯一的。
+
+    选择主键：
+        主键列的数量没有明确的限制，根据数据结构，主键可以包含多或少的列数量。影响：
+        · 提升索引性能
+            如果主键是(a, b), 加入c列在一下条件下可以提升性能：
+                - 需要用c列进行查询
+                - 同一个(a, b)值常常需要跨越很长的数据区间(比index_granularity长数倍)
+            当你添加一个额外的列到主键中，可以帮你跳过很长的数据区间。
+        · 优化数据压缩
+            CK基于主键对数据排序，数据连续一致性越高，对压缩越有利
+        · 在使用CollapsingMergeTree和SummingMergeTree引擎时，提供额外的逻辑
+
+        过长的主键列表对插入性能有负面影响，并会消耗更多的内存。但对SELECT查询没有性能影响。
+
+    在查询中使用索引和分区：
+        使用SELECT时，CK分析是否可以使用索引。
+        索引可用的场景有：
+            当WHERE/PREWHERE语句中包含表达式是：
+            - 主键或分区键的相等或不等比较
+            - 主键或分区键的IN语句
+            - 主键或分区键的固定PREFIX的LIKE语句
+        因此，可以基于一个或很多个主键范围进行查询。
+
+        CK会用主键索引来削减错误的数据，用分区键削减错误的分区。在复杂查询中可以使用索引，肯定不会比全表查询慢。
+
+        用force_index_by_date和force_primary_key可以check CK是否在查询中使用了索引。
+            当force_index_by_date=1，CKcheck查询里是否有date键用来约束数据范围。如果没有件，会抛出异常。但是不会check这个条件是否真正减少了所读取的数据。（因此不能完全避免全表扫描）
+            当force_primary_key=1，CKcheck查询里是否有主键条件来约束数据范围。如果没有，会抛出异常。但是不会check这个条件是否真正减少了所读取的数据。（因此不能完全避免全表扫描）
+
+        按月来分区的键允许只读取包含所需日期的数据块。这种方式下一个数据块最多包含一个月的数据。在一个数据块中，数据按主键排序，但date不一定是第一个主键。因此查询时如果只用一个日期条件但不指定前置的主键的话，会导致读取的数据将超过一天。
+
+    并发数据访问：
+        CK使用多版本来支持并发的访问。当表格同时被读和写时，数据从查询时刻所对应的parts中读取的。读写无锁。插入数据不会和读取发生竞争。
+        表格的读取操作之间是自动并行处理的。
+
+    数据备份：
+        只有MergeTree家族支持备份：
+            ReplicatedMergeTree
+            ReplicatedSummingMergeTree
+            ReplicatedReplacingMergeTree
+            ReplicatedAggregatingMergeTree
+            ReplicatedCollapsingMergeTree
+            ReplicatedGraphiteMergeTree
+
+        备份的单位是单个表。
+
