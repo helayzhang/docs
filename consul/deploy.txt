@@ -1,0 +1,88 @@
+集群部署参考：
+https://www.consul.io/docs/guides/deployment-guide.html
+https://www.jianshu.com/p/1d36a6277c3b
+
+
+=======================================================================================
+/etc/systemd/system/consul.service
+=======================================================================================
+[Unit]
+Description="HashiCorp Consul - A service mesh solution"
+Documentation=https://www.consul.io/
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty=/etc/consul.d/server.json
+
+[Service]
+User=consul
+Group=consul
+ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d/
+ExecReload=/usr/local/bin/consul reload
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+
+
+=======================================================================================
+/etc/consul.d/server.json
+=======================================================================================
+<bootstrap节点>
+{
+    "bootstrap": true,
+    "datacenter": "dc_zhanghao",
+    "data_dir": "/data/data/consul",
+    "log_level": "INFO",
+    "node_name": "node-logserveradmin",
+    "server": true,
+    "advertise_addr":"172.16.52.72",
+    "encrypt": "t2D1eJ5ojLBlmfqEsctMdw==",
+    "ui": true,
+    "enable_syslog": true
+}
+
+<非bootstrap节点>
+{
+    "bootstrap_expect": 3,
+    "datacenter": "dc_zhanghao",
+    "data_dir": "/data/data/consul",
+    "log_level": "INFO",
+    "node_name": "node-as08",
+    "server": true,
+    "advertise_addr": "172.16.79.110",
+    "encrypt": "t2D1eJ5ojLBlmfqEsctMdw==",
+    "ui": true,
+    "enable_syslog": true,
+    "retry_join": ["172.16.52.72"]
+}
+
+
+
+=======================================================================================
+安装 部署
+=======================================================================================
+chown root:root consul
+mv consul /usr/local/bin/
+consul -autocomplete-install
+complete -C /usr/local/bin/consul consul
+
+useradd --system --home /etc/consul.d --shell /bin/false consul
+mkdir --parents /data/data/consul
+chown --recursive consul:consul /data/data/consul
+
+mkdir --parents /etc/consul.d
+touch /etc/consul.d/server.json
+chown --recursive consul:consul /etc/consul.d
+chmod 640 /etc/consul.d/server.json
+
+
+
+=======================================================================================
+启动
+=======================================================================================
+systemctl start consul
+systemctl status consul
+journalctl -u consul -b -f
+
