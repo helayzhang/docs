@@ -1,0 +1,15 @@
+# 查看所有服务
+micro list services
+
+# 查看单个服务详细信息
+micro get service go.micro.srv.test_gomicro_template
+
+# 删除一个服务节点
+micro deregister service '{"name":"go.micro.srv.test_gomicro_template", "nodes":[{"id": "go.micro.srv.test_gomicro_template-d059f998-c801-422e-ace2-bb098645cbaa"}]}'
+micro deregister service '{"name":"go.micro.api", "nodes":[{"id": "go.micro.api-3c4cc352-f67e-45b2-ad26-dbadc69de204"}]}'
+
+# 启动一个api网关
+micro api --handler=rpc --namespace=go.micro.srv
+
+# 请求api网关
+curl -XPOST -H 'Content-Type: application/json' -d '{"name": "John"}' http://localhost:8080/test_gomicro_template/example/call

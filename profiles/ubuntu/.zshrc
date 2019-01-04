@@ -105,3 +105,5 @@ DEFAULT_USER=root
 if [ -f ~/.my_profile ]; then
     source ~/.my_profile
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

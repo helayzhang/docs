@@ -1,0 +1,13 @@
+
+Consul集群里，每一台主机上都运行着Consul agent（一个常驻进程，可以以client或server模式启动）
+Consul集群里至少有一个agent是server模式，更常见的常见是3或5个以上的server agent。server agent之间遵循一致性协议，维护整个集群的状态，响应来自其他agent的请求。
+集群中的其他agent以client模式运行，使用gossip协议来发现其他agent，并将查询转发给server agents。
+
+应用程序只和自己的local consul agent打交道，使用HTTP APIs或DNS接口。
+
+服务也通过local consul agent进行注册，它会把信息同步给consul servers。
+
+当基于DNS来实现Consul的服务发现时，当应用程序查询foo.service.consul域名，将得到随机打乱的提供"foo"服务的主机列表。应用程序不需要其他中间代理即可实现服务发现和负载均衡。
+还有一些HTTP APIs可以使用，用来深度集成consul的服务发现能力，以及使用其他功能，如KV存储。
+
+

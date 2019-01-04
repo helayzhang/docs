@@ -1,0 +1,119 @@
+===========================
+默认namespace：
+	go.micro.api
+
+===========================
+API网关的三种调用方式：
+
+1. 通过path + namespace环境变量路由
+	例：curl "http://localhost:8080/greeter/say/hello?name=John"
+	路由到：go.micro.api.greeter.Say.Hello
+        namespace: go.micro.api
+        service: greeter
+        handler: Say.Hello
+
+2. 直接调用rpc api (form参数)
+    例：curl -d 'service=go.micro.srv.greeter' -d 'method=Say.Hello' -d 'request={"name": "John"}' http://localhost:8080/rpc
+
+3. 直接调用rpc api (json body参数)
+    例：curl -H 'Content-Type: application/json'-d '{"service": "go.micro.srv.greeter", "method": "Say.Hello", "request": {"name": "John"}}' http://localhost:8080/rpc
+
+==========================
+
+API Handler 将任意HTTP请求转成RPC请求转发
+
+    -- 启动方式：--handler=api or MICRO_API_HANDLER=api
+    -- Path: /[service]/[method]
+    -- Content-Type: Any
+    -- Body: Any
+    -- 转发格式：api.Request/api.Response
+    -- Resolver: Path映射service和method
+
+RPC Handler 将json/protobuf格式的HTTP POST请求转成RPC请求转发
+
+    -- 启动方式：--handler=rpc or MICRO_API_HANDLER=rpc
+    -- Path: /rpc
+    -- Content-Type: application/json or application/protobuf
+    -- Body: JSON or Protobuf
+    -- 转发格式：json-rpc or proto-rpc
+    -- Resolver: Path映射service和method
+    如果不指定header，则默认就是RPC Handler
+    
+Proxy Handler 基于服务发现的HTTP反向代理
+
+    -- 启动方式：--handler=proxy or MICRO_API_HANDLER=proxy
+    -- Path: /[service]
+    -- Content-Type: Any
+    -- Body: Any
+    -- 转发格式: HTTP反向代理
+    -- Resolver: Path映射service
+    REST服务可以作为微服务，在API网关后端提供服务
+
+Event Handler 将任意HTTP请求转成Event格式转发
+
+    -- 启动方式：--handler=event or MICRO_API_HANDLER=event
+    -- Path: /[topic]/[event]
+    -- Content-Type: Any
+    -- Body: Any
+    -- 转发格式：api.Event
+    -- Resolver: Path映射topic和event
+
+==========================
+
+RPC Endpoint
+
+    -- API: /rpc 通过main handler直接透传请求给任意service
+
+    -- Params:
+        service: set the service name
+        method: set the service method
+        request: the request body
+        address: optionally specify host address to target
+
+    Example:
+        curl -d 'service=go.micro.srv.greeter' \
+            -d 'method=Say.Hello' \
+            -d 'request={"name": "Bob"}' \
+            http://localhost:8080/rpc
+
+=========================
+
+Resolver
+
+    默认namespace: go.micro.api
+    设置namespace: --namespace= or MICRO_NAMESPACE=
+
+    RPC Resolver:
+        RPC服务有一个service名和一个method，使用一下方式映射：
+        +---------------------+----------------------+-------------+
+        | Path                | Service              | Method      |
+        +---------------------+----------------------+-------------+
+        | /foo/bar            | go.micro.api.foo     | Foo.Bar     |
+        | /foo/bar/baz        | go.micro.api.foo     | Bar.Baz     |
+        | /foo/bar/baz/cat    | go.micro.api.foo.bar | Baz.Cat     |
+        +---------------------+----------------------+-------------+
+
+        Versioned API URLs:
+        +---------------------+-------------------------+-------------+
+        | Path                | Service                 | Method      |
+        +---------------------+-------------------------+-------------+
+        | /foo/bar            | go.micro.api.foo        | Foo.Bar     |
+        | /v1/foo/bar         | go.micro.api.v1.foo     | Foo.Bar     |
+        | /v1/foo/bar/baz     | go.micro.api.v1.foo     | Bar.Baz     |
+        | /v2/foo/bar         | go.micro.api.v2.foo     | Foo.Bar     |
+        | /v2/foo/bar/baz     | go.micro.api.v2.foo     | Bar.Baz     |
+        +---------------------+-------------------------+-------------+
+
+    Proxy Resolver:
+        Proxy代理只需要映射service名：
+        +---------------------+----------------------+----------------+
+        | Path                | Service              | Service Path   |
+        +---------------------+----------------------+----------------+
+        | /foo                | go.micro.api.foo     | /foo           |
+        | /foo/bar            | go.micro.api.foo     | /foo/bar       |
+        | /greeter            | go.micro.api.greeter | /greeter       |
+        | /greeter/:name      | go.micro.api.greeter | /greeter/:name |
+        +---------------------+----------------------+----------------+
+        
+
+

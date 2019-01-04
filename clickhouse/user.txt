@@ -15,8 +15,6 @@ INSERT INTO user VALUES (1, 'zhanghao', 32, 0, 10000, '2018-11-01 08:00:00', '20
 
 ========修改数据
 INSERT INTO user SELECT Id,Name,Age,Sex,Coin,RegisterTime,UpdateTime,-1 FROM user WHERE UpdateTime = (SELECT max(UpdateTime) FROM user WHERE Id=1) LIMIT 1;
-
-
 INSERT INTO user SELECT Id,Name,Age,Sex,20000,RegisterTime,now(),1 FROM user WHERE UpdateTime = (SELECT max(UpdateTime) FROM user WHERE Id=1) LIMIT 1;
 
 
