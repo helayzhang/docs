@@ -1,0 +1,46 @@
+Server是micro服务器的抽象
+
+// Server is a simple micro server abstraction
+type Server interface {
+	Options() Options
+	Init(...Option) error
+	Handle(Handler) error
+	NewHandler(interface{}, ...HandlerOption) Handler
+	NewSubscriber(string, interface{}, ...SubscriberOption) Subscriber
+	Subscribe(Subscriber) error
+	Register() error
+	Deregister() error
+	Start() error
+	Stop() error
+	String() string
+}
+
+Micro里的Server默认是RPC Server。
+
+RPC Server包含多个RPC Service(狭义的)
+
+                                                                            ---- method
+                                                                          /
+                                      -- Receiver        -- Method0 ------------ arg type 
+                                    /                  /                  \
+                -- RPC Service0 -------- Methods ---------- Method1         ---- reply type
+              /                                        \                     \
+RPC Server ------- RPC Service1                          -- Methid2            - is stream
+              \ 
+                -- RPC Service2
+
+===================================
+Server便捷方法：
+
+创建一个rpc server
+server.NewServer(...) 
+
+初始化default rpc server
+server.Init(...)
+
+创建一个rpc 订阅者
+server.NewSubscriber(topic, h, ...)
+
+创建一个rpc handler
+server.NewHandler(h, ...)
+

@@ -1,0 +1,84 @@
+Pilosa的核心数据模型是bit矩阵，矩阵中的每一个cell是一个bit。
+
+一个bit被设置为1，代表着指定行和指定列之间存在特定“关系”。
+
+Pilosa可以存储任意类型数据（利用attributes特性，将数据量化）
+
+Pilosa以行式存储数据，所以针对一行或多行的查询、计算（交集并集）会是最快的。（实践中需要针对此特点设计行、列角色）
+
+Pilosa将行分为多个Field，并可以快速的获取每个Field中的top行。
+
+行、列的编号从0开始时，Pilosa的性能是最佳的。
+
+================================
+Index
+    相当于Namespace概念，不支持跨Index查询。
+
+Column
+    顺序递增的整数，对所有Field通用，Column一列数据经常等价于关系型数据库中的一条记录（一行）。
+
+Row
+    顺序递增的整数，Row值在每个Field中代表其中一个值。
+
+Field
+    Field用来将Row数据分组，一个Field往往对应到关系型数据库中的一个字段，而一行Row往往对应到一个字段中的某一个取值。
+    例如：一个整数Field可以代表关系型数据库中一个字段的所有取值。
+
+Ranked(Cache)
+    维护一个TopN的每一行的columns计数，默认50000个，支持TopN查询。
+
+LRU(Cache)
+    LRU Cache维护了最近被访问的Rows。
+
+Time Quantum
+    时间段，指定field有时间段特性，可以支持按时间段查询。
+
+Attribute
+    可以和Row/Column关联的任意Key/Value属性，可以用来保存量化标签信息。
+
+Shard
+    Index的column是分段的，叫做shard或slice。每个shard包含固定数量的列，叫ShardWidth。
+    ShardWidth是一个常量，默认是2的20次方，只能在编译期间修改。
+    查询操作是并行处理的，最终是在集群中分布式执行的，并遵循一致性hash算法。
+
+Field Type
+    Set(默认), Int, Bool, Time, Mutex
+
+    Set
+        默认数据类型，代表标准的二进制行列矩阵，每一行代表一个字段值。
+
+    Int (BSI Range-Encoding)
+        用于存储Int值，Int Field和其他Field一起共享Column，但其值必须是Int值，并符合min和max范围内。
+
+    Time
+        和Set类似，但每个bit都增加了时间信息。Pilosa为每个时间段创建bitmap，以便基于时间段进行查询。
+
+    Mutex
+        和Set类似，但保证每一列的Row取值是唯一的，也就是说每一列在同一个Field中只能取其中一个值。如果一个mutex Field值更新了，该列老的值会被清空。
+        这种数据类型类似RDBMS中的字段，每个字段只有唯一的一个取值（普通的Pilosa Set允许一个Column命中同一个Field中的多个Row，相当于是个数组）
+
+    Boolean
+        和Mutex类似，并且只针对true/false两个值。Boolean Field不维护Ranked Cache，也不支持key values。
+
+Relational Analogy
+    Entities:
+    +----------------------+------------------------+
+    |  RELATIONAL          |  PILOSA                |
+    +----------------------+------------------------+
+    |  Database            |  N/A (internal:Holder) |
+    |  Table               |  Index                 |
+    |  Row                 |  Column                |
+    |  Column              |  Field                 |
+    |  Value               |  Row                   |
+    |  Value(int)          |  Field.Value (BSI)     |
+    +----------------------+------------------------+
+
+    Simple queries:
+    +-----------------------------------------------+------------------------+
+    |  RELATIONAL                                   |  PILOSA                |
+    +-----------------------------------------------+------------------------+
+    |  select ID from People where Name = 'Bob'     |  Row(Name = "Bob")     |
+    |  select ID from People where Age > 30         |  Range(Age > 30)       |
+    |  select ID from People where Member = true    |  Row(Member = 0)       | 注：此处用Row=0来表示Member=true, 实际上用Row=1也是一样的
+    +-----------------------------------------------+------------------------+
+

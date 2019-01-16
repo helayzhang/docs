@@ -1,0 +1,48 @@
+Service包含以下插件式功能的整体
+    Broker 异步消息代理（默认http broker）
+    Registry 服务发现机制（默认consul）
+    Transport 消息传输机制（默认http）
+    Cmd 命令行解析处理
+    Client micro客户端 service默认创建的client会带上From-Service头元信息
+    Server micro服务器
+
+// 创建一个Service
+service := micro.NewService()                   // 此处可以传入各种选项参数
+    micro.Name("greeter")                       // 设置Service名
+    micro.Version("latest")                     // 设置版本
+    micro.Metadata(map[string]string{           // 设置Metadata
+        "type": "helloworld"
+    })
+    micro.RegisterTTL(30*time.Second)           // 设置注册生命周期
+    micro.RegisterInterval(10*time.Second)      // 设置保活周期
+
+// 初始化一个Service
+service.Init()
+
+// 获取Service的Server
+service.Server()
+
+// 获取Service的Client
+service.Client()
+
+// 运行
+service.Run()
+
+// 注册 Server Handlers
+hello.RegisterSayHandler(service.Server(), new(Say))
+
+// 注册 Server Handlers
+service.Server().Handle(
+    service.Server().NewHandler(
+        &Say{Client: hello.NewSayService("go.micro.srv.greeter", service.Client())},
+    )
+)
+
+// 注册订阅topics
+server.Subscribe()
+
+// Server运行
+server.Run()
+
+===========================================
+使用一个Client

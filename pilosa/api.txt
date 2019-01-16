@@ -1,0 +1,29 @@
+# 查询schema
+curl localhost:10101/schema
+
+# 创建Index
+curl -X POST localhost:10101/index/animals
+curl -X POST localhost:10101/index/repository
+
+# 创建Field
+curl -X POST localhost:10101/index/repository/field/language
+curl -X POST localhost:10101/index/repository/field/stargazer -d '{"options": {"type": "time", "timeQuantum": "YMD"}}'
+
+# 查询Query
+curl -X POST localhost:10101/index/repository/query -d 'Row(stargazer=14)'
+
+# TopN
+curl -X POST localhost:10101/index/repository/query -d 'TopN(language, n=5)'
+
+# 并集
+curl -X POST localhost:10101/index/repository/query -d 'Union(Row(stargazer=14), Row(stargazer=19))'
+
+# 交集
+curl -X POST localhost:10101/index/repository/query -d 'Intersect(Row(stargazer=14), Row(stargazer=19))'
+curl -X POST localhost:10101/index/repository/query -d 'Intersect(Row(stargazer=14), Row(stargazer=19), Row(language=1))'
+
+# 设置Bitmap值
+curl -X POST localhost:10101/index/repository/query -d 'Set(77777, stargazer=99999)'
+
+# 创建Frame -- TODO 有问题
+curl -X POST localhost:10101/index/animals/frame/traits -d '{"options":{"rangeEnabled": true, "fields": [{"name": "captivity", "type": "int", "min": 0, "max": 956}]}}'

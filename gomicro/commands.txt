@@ -11,5 +11,11 @@ micro deregister service '{"name":"go.micro.api", "nodes":[{"id": "go.micro.api-
 # 启动一个api网关
 micro api --handler=rpc --namespace=go.micro.srv
 
+# 启动web
+micro web
+
+# 模板创建service
+micro new github.com/micro/foo
+
 # 请求api网关
 curl -XPOST -H 'Content-Type: application/json' -d '{"name": "John"}' http://localhost:8080/test_gomicro_template/example/call

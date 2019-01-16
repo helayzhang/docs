@@ -1,0 +1,24 @@
+
++---------------+-------------------------------------------------------+
+| Directory	    | Description                                           |
++---------------+-------------------------------------------------------+
+| Broker	    | PubSub messaging; NATS, NSQ, RabbitMQ, Kafka          |
+| Client	    | RPC Clients; gRPC, HTTP                               |
+| Codec	        | Message Encoding; BSON, Mercury                       |
+| Micro	        | Micro Toolkit Plugins                                 |
+| Registry	    | Service Discovery; Etcd, Gossip, NATS                 |
+| Selector	    | Load balancing; Label, Cache, Static                  |
+| Server	    | RPC Servers; gRPC, HTTP                               |
+| Transport	    | Bidirectional Streaming; NATS, RabbitMQ               |
+| Wrappers	    | Middleware; Circuit Breakers, Rate Limiting, Tracing  |
++---------------+-------------------------------------------------------+
+
+=======================
+服务注册TTL与保活
+=======================
+使用Options设置：
+    micro.RegisterTTL(30*time.Second)
+    micro.RegisterInterval(10*time.Second)
+
+
+

@@ -1,0 +1,20 @@
+Transport是服务之间网络通讯接口的抽象，使用类似socket的语义设计。
+Transport的实现有多种实现：HTTP RabbitMQ NATS...
+
+type Transport interface {
+	Init(...Option) error
+	Options() Options
+	Dial(addr string, opts ...DialOption) (Client, error)
+	Listen(addr string, opts ...ListenOption) (Listener, error)
+	String() string
+}
+
+type Client interface {
+	Socket
+}
+
+type Listener interface {
+	Addr() string
+	Close() error
+	Accept(func(Socket)) error
+}

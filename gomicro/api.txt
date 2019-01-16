@@ -1,21 +1,21 @@
 ===========================
-默认namespace：
-	go.micro.api
+- /[service]/[method]	# HTTP paths are dynamically mapped to services (API Handler)
+- /rpc			        # Explicitly call a backend service by name and method (RPC Handler)
 
 ===========================
-API网关的三种调用方式：
+API网关的调用方式：
 
-1. 通过path + namespace环境变量路由
+1. 通过API Handler转发给API服务（API服务会再通过RPC Client去请求真正的RPC Service）
 	例：curl "http://localhost:8080/greeter/say/hello?name=John"
 	路由到：go.micro.api.greeter.Say.Hello
-        namespace: go.micro.api
+        api namespace(default): go.micro.api
         service: greeter
-        handler: Say.Hello
+        method: Say.Hello
 
-2. 直接调用rpc api (form参数)
+2. 通过RPC Handler直接转发给RPC Service (POST + Form Data)
     例：curl -d 'service=go.micro.srv.greeter' -d 'method=Say.Hello' -d 'request={"name": "John"}' http://localhost:8080/rpc
 
-3. 直接调用rpc api (json body参数)
+3. 通过RPC Handler直接转发给RPC Service (POST + Json Body)
     例：curl -H 'Content-Type: application/json'-d '{"service": "go.micro.srv.greeter", "method": "Say.Hello", "request": {"name": "John"}}' http://localhost:8080/rpc
 
 ==========================
@@ -37,7 +37,7 @@ RPC Handler 将json/protobuf格式的HTTP POST请求转成RPC请求转发
     -- Body: JSON or Protobuf
     -- 转发格式：json-rpc or proto-rpc
     -- Resolver: Path映射service和method
-    如果不指定header，则默认就是RPC Handler
+    如果不指定handler类型，则默认就是RPC Handler
     
 Proxy Handler 基于服务发现的HTTP反向代理
 

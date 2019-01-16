@@ -1,0 +1,4 @@
+cmd.Init()
+
+方法初始化命令行参数，以便支持从命令行读取flag参数，通过cmd.DefaultOptions来读取。
+可传入Service初始化options参数来影响服务运行。

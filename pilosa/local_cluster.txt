@@ -1,0 +1,105 @@
+
+# 查看集群状态
+curl -k --ipv4 https://01.pilosa.local:10501/status
+curl -k --ipv4 https://02.pilosa.local:10502/status
+curl -k --ipv4 https://03.pilosa.local:10503/status
+
+# 创建Index
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/sample-index
+     
+# 创建Field
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/sample-index/field/sample-field
+
+# Set数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/sample-index/query -d 'Set(100, sample-field=1)'
+
+# 查询Row数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/sample-index/query -d 'Row(sample-field=1)'
+curl -k --ipv4 -X POST https://02.pilosa.local:10502/index/sample-index/query -d 'Row(sample-field=1)'
+curl -k --ipv4 -X POST https://03.pilosa.local:10503/index/sample-index/query -d 'Row(sample-field=1)'
+
+############################## 
+使用Integer Field
+############################## 
+
+# 创建Index
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients
+
+# 创建Field
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/field/age -d '{"options":{"type": "int", "min": 0, "max": 120}}'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/field/weight -d '{"options":{"type": "int", "min": 0, "max": 500}}'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/field/tcells -d '{"options":{"type": "int", "min": 0, "max": 2000}}'
+
+# Set数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Set(1, age=34)'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Set(1, weight=128)'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Set(1, tcells=1145)'
+
+# 导入csv数据
+pilosa import -i patients --field age --host https://01.pilosa.local:10501 ages.csv
+
+# 查询数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Range(age > 40)'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Sum(field="age")'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Sum(Range(age > 40), field="age")'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Min(field="age")'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Min(Range(age > 40), field="age")'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Max(field="age")'
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/patients/query -d 'Max(Range(age < 40), field="age")'
+
+############################## 
+存储Row/Column Attributes
+############################## 
+
+# 创建Index
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books
+
+# 创建Field (理解这里，Index是Book，Field是Members，Book是列，Members是行)
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/field/members -d '{}'
+
+# 添加列属性
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query \
+     -d 'SetColumnAttrs(1, name="To Kill a Mockingbird", year=1960)
+         SetColumnAttrs(2, name="No Name in the Street", year=1972)
+         SetColumnAttrs(3, name="The Tipping Point", year=2000)
+         SetColumnAttrs(4, name="Out Stealing Horses", year=2003)
+         SetColumnAttrs(5, name="The Forever War", year=2008)'
+
+# 添加行属性
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query \
+     -d 'SetRowAttrs(members, 10001, fullName="John Smith")
+         SetRowAttrs(members, 10002, fullName="Sue Perkins")
+         SetRowAttrs(members, 10003, fullName="Jennifer Hawks")
+         SetRowAttrs(members, 10004, fullName="Pedro Vazquez")
+         SetRowAttrs(members, 10005, fullName="Pat Washington")'
+
+# 查询行数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query -d 'Row(members=10002)'
+
+# Set数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query \
+     -d 'Set(3, members=10001)
+         Set(5, members=10001)
+         Set(1, members=10002)
+         Set(2, members=10002)
+         Set(4, members=10002)
+         Set(3, members=10003)
+         Set(4, members=10004)
+         Set(5, members=10004)
+         Set(1, members=10005)
+         Set(2, members=10005)
+         Set(3, members=10005)
+         Set(4, members=10005)
+         Set(5, members=10005)'
+
+# (再次)查询行数据
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query -d 'Row(members=10002)'
+
+# 查询行数据，带上列属性
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query?columnAttrs=true -d 'Row(members=10002)'
+
+# 查交集（同时被两个members命中的book）
+curl -k --ipv4 -X POST https://01.pilosa.local:10501/index/books/query?columnAttrs=true \
+     -d 'Intersect(Row(members=10002), Row(members=10004))'
+
+
