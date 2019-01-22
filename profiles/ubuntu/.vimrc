@@ -26,10 +26,6 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
 Plug '/usr/local/opt/fzf'
 
-"golang autocomplete
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
-Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-
 "c/cpp autocomplete
 Plug 'Valloric/YouCompleteMe'           "code auto complete - many language
 Plug 'Raimondi/delimitMate'             "code auto complete - ( [ { 
@@ -54,6 +50,8 @@ Plug 'skywind3000/asyncrun.vim'         "async run shell
 
 Plug 'scrooloose/nerdtree'              "tree - file choose
 Plug 'scrooloose/nerdcommenter'         "code comment
+
+Plug 'vim-airline/vim-airline'
 
 call plug#end()
 
@@ -129,7 +127,6 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>" |            " 回车即�
 let g:ycm_semantic_triggers =  {
            \ 'c,cpp,python,java,erlang,perl': ['re!\w{2}'],
            \ 'cs,lua,javascript': ['re!\w{2}'],
-           \ 'go': ['re!\w{2}'],
            \ }
 
 "nnoremap gd :YcmCompleter GoToDefinitionElseDeclaration<CR>
@@ -142,7 +139,8 @@ nnoremap gd :YcmCompleter GoTo<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:rehash256 = 1
 let g:molokai_original = 1
-silent! colorscheme molokai
+"silent! colorscheme molokai
+colorscheme elflord
 
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
@@ -197,47 +195,6 @@ let g:NERDTrimTrailingWhitespace = 1
 
 " Enable NERDCommenterToggle to check all selected lines is commented or not
 let g:NERDToggleCheckAllLines = 1
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""" vim-go
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:go_list_type = "quickfix"
-let g:go_test_timeout = '5s'
-let g:go_fmt_command = "goimports"
-let g:go_fmt_fail_silently = 1
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_function_calls = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_generate_tags = 1
-let g:go_def_mode = 'godef'
-let g:go_decls_includes = "func,type"
-
-map <C-n> :cnext<CR>
-map <C-m> :cprevious<CR>
-
-autocmd FileType go nmap <leader>r <Plug>(go-run)
-autocmd FileType go nmap <leader>t <Plug>(go-test)
-autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
-autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
-
-" run :GoBuild or :GoTestCompile based on the go file
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
-autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -302,9 +259,7 @@ au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn} set filetype=markdown 
 set encoding=utf-8
 set t_Co=256
 set background=dark
-set showcmd
 set number
-set ruler
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -325,8 +280,23 @@ set nobackup
 set noswapfile
 set autoread
 set autowrite
-set laststatus=2
-set statusline+=%F
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 状态行(命令行)的显示
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 命令行（在状态行下）的高度，默以为1，这里是2
+set cmdheight=1
+"底部显示光标的位置的状态行
+set ruler
+" 增强模式中的命令行自动完成操纵
+set wildmenu
+" 命令行显示输入的命令
+set showcmd
+" 命令行显示vim当前模式
+set showmode
+set statusline=%<%f\ %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ %-14.(%l,%c%V%)\ %P
+" 开启状态栏信息
+set laststatus=2 "总显示最后一个窗口的状态行；设为1则窗口数多于一个的时候显示最后一个窗口的状态行；0不显示最后一个窗口的状态行
 
 " 打开文件自动定位到最后编辑的位置
 "autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif

@@ -1,0 +1,600 @@
+let mapleader = ","
+let leader=","    " 比较习惯用;作为命令前缀，右手小拇指直接能按到
+" 把空格键映射成:
+" nmap <space> :
+
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'bufexplorer.zip'
+"Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'The-NERD-tree'
+Plugin 'taglist.vim'
+Plugin 'comments.vim'   "快速注释
+Plugin 'Lokaltog/vim-powerline' "漂亮的状态栏
+Plugin 'godlygeek/tabular'  "快速对齐
+Plugin 'gregsexton/MatchTag'  "自动高亮匹配标签
+Plugin 'ShowFunc.vim'
+Plugin 'The-NERD-Commenter'
+" Displays tags in a window, ordered by class etc, i used it instead of taglist
+Plugin 'majutsushi/tagbar' "ctags标签提取显示
+Plugin 'CmdlineComplete'
+Plugin 'autopreview'
+Plugin 'Color-Sampler-Pack'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'YankRing.vim'
+Plugin 'tpope/vim-surround.git'
+Plugin 'DoxygenToolkit.vim'
+Plugin 'ShowMarks'
+
+" Deal with pairs of punctuations such as (), [], {}, and so on
+Plugin 'kana/vim-smartinput'
+"MiniBufExplorer提供多文件同时编辑功能，并在编辑器上方显示文件的标签
+Plugin 'fholgado/minibufexpl.vim' 
+Plugin 'bling/vim-airline'
+Plugin 'marijnh/tern_for_vim' "牛逼的基于语法分析的补全
+Plugin 'gorodinskiy/vim-coloresque' "颜色符号显示对应颜色
+Plugin 'Tagbar'
+Plugin 'fatih/vim-go'  
+Plugin 'fatih/molokai'
+Plugin 'scrooloose/nerdtree'
+
+call vundle#end()
+filetype plugin indent on
+
+"http://blog.chinaunix.net/uid-20680966-id-3064011.html
+"http://linux.it.net.cn/m/view.php?aid=21200
+"http://46aae4d1e2371e4aa769798941cef698.devproxy.yunshipei.com/lyh__521/article/details/46295775
+"http://m.fx114.net/qa-197-451840.aspx
+"http://bbs.anycodes.cn/forum.php?mod=viewthread&tid=69969
+
+
+"http://www.mikewootc.com/wiki/tool/sw_develop/vim_ycm_ubuntu_1604.html
+set runtimepath+=~/.vim/bundle/YouCompleteMe
+"let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+
+set completeopt=longest,menu								" 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+" Uncomment the following to have Vim jump to the last position when reopening a file
+if has("autocmd")
+	au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+	"have Vim load indentation rules and plugins according to the detected filetype
+	autocmd InsertLeave * if pumvisible() == 0|pclose|endif	"离开插入模式后自动关闭预览窗口
+	filetype plugin indent on
+endif
+
+let g:syntastic_ignore_files=[".*\.py$"]                    " 禁用syntastic来对python检查
+let g:ycm_seed_identifiers_with_syntax=1					" 语法关键字补全  
+let g:ycm_disable_for_files_larger_than_kb=1000000000
+let g:ycm_confirm_extra_conf=0								" 打开vim时不再询问是否加载ycm_extra_conf.py配置  
+"let g:ycm_python_binary_path = '/usr/bin/python3'
+
+inoremap <expr> <CR>  pumvisible() ? "\<C-y>" : "\<CR>"		" 回车即选中当前项  
+"上下左右键的行为 会显示其他信息
+inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
+inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
+inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
+
+
+" 使用ctags生成的tags文件
+let g:ycm_collect_identifiers_from_tag_files = 1
+" 开启语义补全
+" 修改对C语言的补全快捷键，默认是CTRL+space，修改为ALT+;未测出效果
+"let g:ycm_key_invoke_completion = '<M-;>'
+"设置转到定义处的快捷键为ALT+G，未测出效果
+"nmap <M-g> :YcmCompleter GoToDefinitionElseDeclaration <C-R>=expand("<cword>")<CR><CR> 
+
+"关键字补全 开启语义补全
+let g:ycm_seed_identifiers_with_syntax = 1
+" 在接受补全后不分裂出一个窗口显示接受的项
+set completeopt-=preview
+
+" 每次重新生成匹配项，禁止缓存匹配项
+let g:ycm_cache_omnifunc=0
+" 在注释中也可以补全
+let g:ycm_complete_in_comments=1
+" 输入第一个字符就开始补全
+let g:ycm_min_num_of_chars_for_completion=1
+" 不查询ultisnips提供的代码模板补全，如果需要，设置成1即可
+let g:ycm_use_ultisnips_completer=0
+"在字符串输入中也能补全
+let g:ycm_complete_in_strings = 1
+" 设置在下面几种格式的文件上屏蔽ycm
+let g:ycm_filetype_blacklist = {
+      \ 'tagbar' : 1,
+      \ 'nerdtree' : 1,
+      \}
+"youcompleteme  默认tab  s-tab 和 ultisnips 冲突
+let g:ycm_key_list_select_completion = ['<Down>']
+let g:ycm_key_list_previous_completion = ['<Up>']
+" 修改对C函数的补全快捷键，默认是CTRL + space，修改为ALT + ;
+let g:ycm_key_invoke_completion = '<M-;>'
+
+nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>  
+nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>  
+nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>  
+nmap <F5> :YcmDiags<CR>  
+
+"-----------------------------------基本------------------------------------
+"处理未保存或只读文件时，弹出确认
+set confirm
+
+"自动保存
+" 自动把内容写回文件: 如果文件被修改过，在每个 :next、:rewind、:last、:first、:previous、:stop、:suspend、:tag、:!、:make、CTRL-] 和 CTRL-^命令时进行；用 :buffer、CTRL-O、CTRL-I、'{A-Z0-9} 或 `{A-Z0-9} 命令转到别的文件时亦然
+set autowrite
+
+"历史记录数
+set history=10000
+
+"编码设置
+set fenc=utf-8
+set fencs=utf-8,ucs-bom,shift-jis,gb18030,gbk,gb2313,cp936
+
+"语法高亮
+"*******************-- 语法 *********************
+if has("syntax")
+	syntax enable               "打开语法高亮
+	syntax on
+endif
+
+set background=dark
+"设置配色方案 molokai
+colorscheme elflord
+"colorscheme     desert " elflord ron peachpuff default 设置配色方案，vim自带的配色方案保存在/usr/share/vim/vim72/colors目录下
+"colorscheme torte ;colorscheme murphy ;colorscheme desert ;colorscheme desert ;colorscheme elflord ;colorscheme ron
+"set nowrap                 " 设置不自动换行
+
+"设置行号
+set nu
+set guifont=Courier\ 16   "设置字体
+set gdefault                " 替换时所有的行内匹配都被替换，而不是只有第一个
+
+
+"设置缩进
+set ai!                     " 设置自动缩进
+set tabstop=4
+set sts=4
+set smartindent
+set smartindent             " 智能缩进 智能对齐方式
+set autoindent              " 设置自动对齐(缩进)：即每行的缩进值与上一行相等；使用 noautoindent 取消设置
+set tabstop=4               " 设置Tab键的宽度(等同的空格个数)
+set shiftwidth=4            " 自动对齐的空格数
+set softtabstop=4           " 按退格键时可以一次删掉4个空格
+set smarttab                " insert tabs on the start of a line according to shiftwidth, not tabstop
+set expandtab               " 将Tab自动转化成空格(需要输入真正的Tab键时,使用Ctrl+V+Tab)
+set shiftround              " Use multiple of shiftwidth when indenting with '<' and '>'
+set cindent                 " 使用 C/C++ 语言的自动缩进方式
+set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s     "设置C/C++语言的具体缩进方式
+set showmatch               " 设置匹配模式，显示匹配的括号，类似当输入一个左括号时会匹配相应的那个右括号
+set linebreak               " 整词换行
+set whichwrap=b,s,<,>,[,]   " 光标从行首和行末时可以跳到另一行去
+"set hidden " Hide buffers when they are abandoned
+"set mouse=a                " Enable mouse usage (all modes) 为命令、输入、导航都激活鼠标的使用和其他程序间共享剪切板(使vim默认yy及p使用系统选择缓冲区)
+
+"使用鼠标
+"按住 shift 才由鼠标右键处理操作
+set mouse=a
+" 在工作区双击鼠标定位）
+set selectmode=mouse,key 
+"set mouse=v
+
+set number                  " Enable line number    "显示行号
+set autochdir               " 自动切换当前目录为当前文件所在的目录
+"set previewwindow          " 标识预览窗口
+set autoread               " 设置当文件被改动时自动载入
+be mswin                    " 显示右键菜单
+
+set mps+=<:>        " 让<>可以使用%跳转
+"set hid             " allow to change buffer without saving 
+set shortmess=atI   " shortens messages to avoid 'press a key' prompt 
+set lazyredraw      " do not redraw while executing macros (much faster)
+
+
+
+"设置自动格式化,解决复制代码过来的时候出现格式混乱
+"自动缩进当前行： ==
+set formatoptions=tcrqn
+
+
+" 封闭错误提示音
+set noerrorbells
+
+"设置括号配对情况
+set showmatch
+set matchtime=2
+
+"设置没有自动备份
+set noswapfile
+set nobackup
+
+"设置纵向虚线对齐
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 状态行(命令行)的显示
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 命令行（在状态行下）的高度，默以为1，这里是2
+set cmdheight=1
+"底部显示光标的位置的状态行
+set ruler
+" 增强模式中的命令行自动完成操纵 
+set wildmenu 
+" 命令行显示输入的命令
+set showcmd            
+" 命令行显示vim当前模式 
+set showmode       
+set statusline=%<%f\ %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ %-14.(%l,%c%V%)\ %P
+" 开启状态栏信息 
+set laststatus=2 "总显示最后一个窗口的状态行；设为1则窗口数多于一个的时候显示最后一个窗口的状态行；0不显示最后一个窗口的状态行
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 查找
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"搜索模式忽略大小写
+set ignorecase
+"如果搜索模式包含大小写则不适用ignorecase
+set smartcase
+"禁止搜索到文件两端时重新搜索
+"set nowrapscan
+
+"高亮显示搜索到的文本
+set hlsearch
+"逐字符高亮
+set incsearch
+set completeopt=longest,menu,menuone " 关掉智能补全时的预览窗口
+map <C-A> ggvG              " 全选ctrl+a
+
+" 答应backspace和光标键跨越行边界 
+set whichwrap+=<,>,h,l        
+set backspace=indent,eol,start  "开启backspace在插入模式删除功能
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 文本格式和排版
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+" 显示Tab符，->
+"set list 
+
+" 使用一高亮竖线代替
+"set listchars=tab:\|\ ,
+
+" 制表符为4
+set tabstop=4
+
+" 自动对齐（继续前一行的缩进方式）
+set autoindent
+
+" 智能自动缩进（以c程序的方式）
+set smartindent 
+set softtabstop=4 
+
+" 换行时行间交错使用4个空格
+set shiftwidth=4 
+
+" 不要用空格代替制表符
+set noexpandtab
+
+" 使用C样式的缩进
+set cindent 
+
+" 在行和段开始处使用制表符
+set smarttab  
+
+"和系统共用剪贴板
+set clipboard+=unnamed
+
+"突出显示当前编辑行
+set cursorline
+"开启折叠，并设置空格来开关折叠
+set foldenable
+"set foldmethod=syntax
+set foldmethod=marker
+"set foldcolumn=0
+setlocal foldlevel=1
+"set foldclose=all
+nnoremap <space> @=((foldclosed(line('.'))<0)?'zc':'zo')<CR>
+"搜索和undo时不展开设置好的折叠
+set foldopen-=search
+set foldopen-=undo
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 文件相关
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set fenc=utf-8
+set encoding=utf-8        " 设置vim的工作编码为utf-8，假如源文件不是此编码，vim会进行转换后显示
+set fileencoding=utf-8        " 让vim新建文件和保存文件使用utf-8编码
+set fileencodings=utf-8,gb18030,ucs-bom,gbk,gb2312,cp936
+filetype on                     " 侦测文件类型
+filetype indent on                 " 针对不同的文件类型采用不同的缩进格式
+filetype plugin on                 " 针对不同的文件类型加载对应的插件
+
+syntax on                     " 语法高亮
+filetype plugin indent on    " 启用自动补全
+
+
+" 设置NerdTree
+map <F3> :NERDTreeMirror<CR>
+"map <C-n> :NERDTreeToggle<CR>
+map <F3> :NERDTreeToggle<CR>
+"窗口位置
+let NERDTreeWinPos='left'
+"窗口宽度
+let NERDTreeWinSize=30
+"显示增强
+let NERDChristmasTree=1
+"自动调整焦点
+let NERDTreeAutoCenter=1
+"鼠标模式:目录单击,文件双击
+let NERDTreeMouseMode=2
+"打开文件后自动关闭
+let NERDTreeQuitOnOpen=0
+"显示文件
+let NERDTreeShowFiles=1
+"显示隐藏文件
+let NERDTreeShowHidden=0
+"高亮显示当前文件或目录
+let NERDTreeHightCursorline=1
+"显示行号
+let NERDTreeShowLineNumbers=1
+"不显示'Bookmarks' label 'Press ? for help'
+let NERDTreeMinimalUI=1
+"快捷键
+"nnoremap <silent> <F2> :NERDTreeToggle<CR>
+"当打开vim且没有文件时自动打开NERDTree
+autocmd vimenter * if !argc() | NERDTree | endif
+"只剩 NERDTree时自动关闭
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+
+
+"""""""""""""NERDCommenter""""""""""""""""""
+let NERDShutUp=1
+" ,ca，在可选的注释方式之间切换，比如C/C++ 的块注释/* */和行注释//
+" ,cc，注释当前行
+" ,c，切换注释/非注释状态
+" ,cs，以”性感”的方式注释
+" ,cA，在当前行尾添加注释符，并进入Insert模式
+" ,cu，取消注释
+" Normal模式下，几乎所有命令前面都可以指定行数
+" Visual模式下执行命令，会对选中的特定区块进行注释/反注释
+let mapleader = ","
+nmap ,cc <leader>cc  = : ,
+
+" NERD_commenter.vim
+" http://www.vim.org/scripts/script.php?script_id=1218
+" Toggle单行注释/“性感”注释/注释到行尾/取消注释
+"做此快捷键才可使用如下3个快捷键
+" n,cc : 为光标以下 n 行添加注释
+" n,cu : 为光标以下 n 行取消注释
+" n,cm : 为光标以下 n 行添加块注释
+
+map <leader>cc ,c<space>
+map <leader>cs ,cs
+map <leader>c$ ,c$
+map <leader>cu ,cu
+" UltiSnips 的 tab 键与 YCM 冲突，重新设定
+let g:UltiSnipsExpandTrigger="<leader><tab>"
+let g:UltiSnipsJumpForwardTrigger="<leader><tab>"
+let g:UltiSnipsJumpBackwardTrigger="<leader><s-tab>"
+
+"******************-- c/h文件间相互切换 -- 插件: a.vim **************
+":A  在新Buffer中切换到c/h文件
+":AS     横向分割窗口并打开c/h文件
+":AV     纵向分割窗口并打开c/h文件
+":AT     新建一个标签页并打开c/h文件
+"nnoremap <silent> <F11> :A<CR>
+map <silent> <F11> :A<CR>
+"nnoremap <silent> <C-Tab> :A<CR>
+
+"**********************-- 多功能 -- 插件: c.vim ********************
+"功能一：自动为*.c/*.cpp 文件添加文件头说明,当你打开一个扩展名为.c的文件，在文件开始处会自动加上如下的描述，并且将光标,
+"定位到description处，此时是insert mode可直接键入文件描述
+"当然你可以改变AUTHOR COMPANY等得默认值。vim ~/.vim/c-support/templates/Templates
+"功能二：插入一个函数  \if  当需要创建一个新函数时，只要在正常模式(ESC)键入\if VIM会提示键入函数名
+"功能三：插入main函数 \im 在正常模式下键入\im, 得到图三的默认的main函数内容
+"功能四： 插入函数头 \cfu 在正常模式下键入\cfu,VIM会提示键入函数名
+"功能五： 添加一个注释块 \cfr    添加一个注释块， 在正常模式下键入\cfr，并且光标被定位到注释块内
+"功能六：包含(include)一个头文件 \p<  在正常模式下键入\p<, 会得到“#include <>”,并且光标被定位到尖括号内，可以直接键入要包含的头文件名
+
+"******************-- 在工程中查找 -- 插件: Grep *******************
+nnoremap <silent> <F10> :Grep<CR>
+
+"http://blog.csdn.net/longxin007/article/details/1876564
+"********************-- 显示函数原型 ********************************
+" ShowFunc.vim  <-------- 暂时没有使用
+" http://www.vim.org/scripts/script.php?script_id=397
+" F1打开ShowFunc TagList窗口，显示C/C++函数原型
+map  <F1> <Plug>ShowFunc
+map! <F1> <Plug>ShowFunc
+"nmap   表示在vim的普通模式下，即相对于：编辑模块和可视模式，以下是几种模式
+"map    普通，可视模式及操作符等待模式
+"cmap   命令行模式
+"imap   插入模式
+"map!   插入和命令行模式
+"omap   操作符等待模式
+"vmap   可视模式
+
+"http://my.oschina.net/u/554995/blog/59927
+"**************************************-- 标签浏览器Taglist setting **********************************
+let Tlist_Ctags_Cmd='ctags'         " 因为我们放在环境变量里，所以可以直接执行
+let Tlist_Use_Right_Window=1        " 让窗口显示在右边，0的话就是显示在左边
+let Tlist_Show_One_File=0           " 让taglist可以同时展示多个文件的函数列表
+let Tlist_File_Fold_Auto_Close=1    " 非当前文件，函数列表折叠隐藏
+let Tlist_WinWidth =28                   "设置taglist的宽度
+let Tlist_Exit_OnlyWindow=1         " 当taglist是最后一个分割窗口时，自动推出vim
+" 是否一直处理tags.1:处理;0:不处理
+let Tlist_Process_File_Always=1     " 实时更新tags
+"let Tlist_Use_Right_Window=1           "在右侧窗口中显示taglist窗口
+let Tlist_Inc_Winwidth=0
+let Tlist_Use_Left_Window =1             "在左侧窗口中显示taglist窗口 
+"不显示"press F1 to display help"
+let Tlist_Compact_Format=1
+"只显示当前文件的tags
+"let Tlist_Show_One_File=1  
+"高亮显示
+let Tlist_Auto_Highlight_tag=1
+"随文件自动更新
+let Tlist_Auto_Update=1
+"单击跳转
+let Tlist_Use_SingClick=1
+"打开关闭快捷键
+"nnoremap <silent> <F3> :TlistToggle<CR>
+
+
+""""""""""""""""""tagbar""""""""""""""""""""""""""""
+nmap <F4> :TagbarToggle<CR>
+"map <F5> :Tagbar<CR>
+"nmap <Leader>tb :TagbarToggle<CR>      "快捷键设置
+let g:tagbar_width = 30
+let g:tagbar_ctags_bin='ctags'          "ctags程序的路径
+let g:tagbar_autofocus = 1
+"autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx call tagbar#autoopen()  "如果是c语言的程序的话，tagbar自动开启
+
+"********************************-- 文件浏览器和缓冲区管理器WinManager setting **********
+"let g:winManagerWindowLayout='FileExplorer|TagList'
+"let g:persistentBehaviour=0         " 如果所有编辑文件都关闭了，退出vim
+"nmap wm :WMToggle<cr>
+
+"********************************************-- QuickFix setting ********************
+map <F6> :make clean<CR><CR><CR>    "按下F6，执行make clean 按下F7，执行make编译程序，并打开quickfix窗口，显示编译信息
+map <F7> :make<CR><CR><CR> :copen<CR><CR>
+" 按下F8，光标移到上一个错误所在的行
+map <F8> :cp<CR>
+" 按下F9，光标移到下一个错误所在的行
+map <F9> :cn<CR>
+imap <F6> <ESC>:make clean<CR><CR><CR>
+imap <F7> <ESC>:make<CR><CR><CR> :copen<CR><CR>
+imap <F8> <ESC>:cp<CR>
+imap <F9> <ESC>:cn<CR>
+
+
+let g:SuperTabRetainCompletionType=2
+let g:SuperTabDefaultCompletionType="<C-X><C-O>"
+
+" showmarks setting
+let showmarks_enable = 0            " disable showmarks when vim startup
+let showmarks_include = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let showmarks_ignore_type = "hqm"   " help, Quickfix, non-modifiable
+
+" NERDTree options
+" Auto change the root directory
+let NERDTreeChDirMode=2
+let g:NERDTreeWinSize = 23
+
+"let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
+"let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
+"let g:DoxygenToolkit_authorName="zengming@jyxtec.com" 
+"let g:DoxygenToolkit_versionString="0.1.00"
+"let g:DoxygenToolkit_briefTag_funcName="yes"
+"autocmd BufNewFile *.{h,hpp,c,cpp} DoxAuthor 
+
+"http://blog.csdn.net/wooin/article/details/1858917
+"*************--  快速浏览和操作Buffer -- 插件: MiniBufExplorer  ******
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1
+let g:miniBufExplMapWindowNavVim = 1   
+let g:miniBufExplMoreThanOne=0
+
+map <F11> :MBEbp<CR>
+map <F12> :MBEbn<CR>
+"这里配置了F11和F12键来进行前后buffer的跳转，比较方便。如果要关闭某个buffer的话，可以使用命令:MBEbd [num]，如果只是输入:MBEbd是关闭当前buffer，如果后面跟有buffer的数字标号，则关闭指定的buffer。
+"解决FileExplorer窗口变小问题
+"let g:bufExplorerMaxHeight=30
+"let g:miniBufExplorerMoreThanOne=0
+"hi MBENormal               guifg=#808080 guibg=fg
+"hi MBEChanged              guifg=#CD5907 guibg=fg
+"hi MBEVisibleNormal        guifg=#5DC2D6 guibg=fg
+"hi MBEVisibleChanged       guifg=#F1266F guibg=fg
+"hi MBEVisibleActiveNormal  guifg=#A6DB29 guibg=fg
+"hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg
+"<Tab>   向前循环切换到每个buffer名上
+"<S-Tab>     向后循环切换到每个buffer名上
+"<Enter>     在打开光标所在的buffer
+"d   删除光标所在的buffer
+"<C-Tab>     向前循环切换到每个buffer上,并在但前窗口打开
+"<C-S-Tab>   向后循环切换到每个buffer上,并在但前窗口打开
+"如果在~/.vimrc中设置了下面这句:
+"let g:miniBufExplMapWindowNavVim = 1
+"则可以用<C-h,j,k,l>切换到上下左右的窗口中去,就像:
+"C-w,h j k l    向"左,下,上,右"切换窗口.
+"在~/.vimrc中设置:
+"let g:miniBufExplMapWindowNavArrows = 1
+"是用<C-箭头键>切换到上下左右窗口中去
+
+
+"*****************************************************
+"           Syntastic配置                            *
+"*****************************************************
+" http://note.hackrole.com/drafts/vim_config_syntastic.html
+" 打开文件的时候做检查
+let g:syntastic_check_on_open = 1
+" 每次保存的时候做检查
+let g:syntastic_check_on_wq = 1
+" 每次自动调用 :SyntasticSetLocList, 将错误覆盖 **quickfix**
+let g:syntastic_always_populate_loc_list = 1
+" 自动拉起/关闭错误窗口, 不需要手动调用 :Errors
+let g:syntastic_auto_loc_list = 1
+
+let g:syntastic_cpp_include_dirs = ['/usr/include/', '/usr/local/include/']
+let g:syntastic_cpp_remove_include_errors = 1
+let g:syntastic_cpp_check_header = 1
+let g:syntastic_cpp_compiler = 'g++'
+let g:syntastic_cpp_compiler_options = '-std=c++1y -stdlib=libstdc++'
+"set error or warning signs
+"let g:syntastic_error_symbol = '✗'
+"let g:syntastic_warning_symbol = '⚠'
+"whether to show balloons
+let g:syntastic_enable_balloons = 1
+"https://segmentfault.com/a/1190000002662054
+
+" 最后一行用于禁止自动下载
+"let g:go_disable_autoinstall = 0
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_build_constraints = 1
+let g:neocomplete#enable_at_startup = 1
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_extra_types = 1
+
+let g:tagbar_type_go = {
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+\ }
+
+set paste
