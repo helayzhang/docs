@@ -31,9 +31,11 @@ Plug 'vim-scripts/a.vim'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
-Plug 'ludovicchabant/vim-gutentags'     "tags - auto gen tags
+"tags - auto gen tags
+Plug 'ludovicchabant/vim-gutentags'     
 
-Plug 'skywind3000/asyncrun.vim'         "async run shell
+"async run shell
+Plug 'skywind3000/asyncrun.vim'         
 
 Plug 'scrooloose/nerdtree'              "tree - file choose
 Plug 'scrooloose/nerdcommenter'         "code comment

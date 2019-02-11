@@ -11,6 +11,9 @@ export ZSH="/root/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME="robbyrussell"
+#ZSH_THEME="agnoster"
+#ZSH_THEME="powerlevel9k/powerlevel9k"
+#ZSH_THEME="avit"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -99,11 +102,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
-#
-DEFAULT_USER=root
 
 if [ -f ~/.my_profile ]; then
     source ~/.my_profile
 fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

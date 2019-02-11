@@ -17,8 +17,6 @@ let mapleader=","
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 call plug#begin('~/.vim/plugged')
-"vim doc
-Plug 'yianwillis/vimcdoc'
 
 "color
 Plug 'tomasr/molokai'
@@ -26,7 +24,8 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 
 "search
 Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
-Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 "golang autocomplete
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
@@ -54,11 +53,15 @@ Plug 'ludovicchabant/vim-gutentags'     "tags - auto gen tags
 
 Plug 'skywind3000/asyncrun.vim'         "async run shell
 
-
 Plug 'scrooloose/nerdtree'              "tree - file choose
 Plug 'scrooloose/nerdcommenter'         "code comment
-"Plug 'majutsushi/tagbar'                "tags - tag bar
-"Plug 'ctrlpvim/ctrlp.vim'               "search - search everything
+
+Plug 'cespare/vim-toml'
+
+"底部状态栏
+"Plug 'powerline/powerline'
+Plug 'vim-airline/vim-airline'
+
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -76,12 +79,12 @@ let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml']
 nnoremap <silent> <F1> :AsyncRun -raw -cwd=<root> touch .root && mkdir -p build <cr>
 
 " F2 生成ycm
-" nnoremap <silent> <F2> :AsyncRun -raw -cwd=<root> /Users/zhanghao/.vim/plugged/YCM-Generator/config_gen.py -f -v . <cr>
+nnoremap <silent> <F2> :AsyncRun -raw -cwd=<root> /root/.vim/plugged/YCM-Generator/config_gen.py -f -v . <cr>
 
 " F3 格式化代码
 
 " F4 重新生成Makefile cmake
-nnoremap <silent> <F4> :AsyncRun -raw -cwd=<root> rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ .. && cd .. && cp -rf build/compile_commands.json . <cr>
+nnoremap <silent> <F4> :AsyncRun -raw -cwd=<root> rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ .. <cr>
 
 " F5 运行当前文件
 " 参数 `-raw` 表示输出不用匹配错误检测模板 (errorformat) ，直接原始内容输出到 quickfix 窗口
@@ -118,7 +121,8 @@ let g:ycm_server_log_level = 'info'
 let g:ycm_min_num_identifier_candidate_chars = 2
 set completeopt=menu,menuone
 let g:ycm_collect_identifiers_from_tags_files = 1           " 开启 YCM 基于标签引擎
-let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+"let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf=0
 
 let g:ycm_min_num_of_chars_for_completion=2	                  " 从第2个键入字符就开始罗列匹配项
@@ -127,7 +131,7 @@ let g:ycm_complete_in_strings = 0                             " 在字符串输�
 let g:ycm_collect_identifiers_from_comments_and_strings = 0   " 注释和字符串中的文字也会被收入补全
 let g:ycm_show_diagnostics_ui = 0                             " 禁用语法检查
 
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>" |            " 回车即选中当前项
+"inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>" |            " 回车即选中当前项
 
 let g:ycm_semantic_triggers =  {
            \ 'c,cpp,python,java,erlang,perl': ['re!\w{2}'],
@@ -142,22 +146,12 @@ nnoremap gd :YcmCompleter GoTo<CR>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""" auto format
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" auto format
-"let g:formatdef_harttle = '"astyle --style=attach --pad-oper"'
-"let g:formatters_cpp = ['harttle']
-"let g:formatters_java = ['harttle']
-
-"noremap <F3> :Autoformat<CR>
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """ color
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:rehash256 = 1
 let g:molokai_original = 1
-colorscheme molokai
+"colorscheme molokai
+colorscheme elflord
 
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
@@ -254,6 +248,7 @@ function! s:build_go_files()
 endfunction
 autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """ ctags
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -279,6 +274,7 @@ if !isdirectory(s:vim_tags)
    silent! call mkdir(s:vim_tags, 'p')
 endif
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """ search - LeaderF
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -298,7 +294,7 @@ let g:Lf_ShowRelativePath = 0
 let g:Lf_HideHelp = 1
 let g:Lf_StlColorscheme = 'powerline'
 let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
-let g:Lf_Ctags = '/usr/local/opt/universal-ctags/bin/ctags'
+let g:Lf_Ctags = '/usr/local/bin/ctags'
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -312,40 +308,54 @@ au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn} set filetype=markdown 
 """ basic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set showcmd
-set autowrite
-set number
 set encoding=utf-8
+set t_Co=256
+set background=dark
+set number
 set tabstop=4
 set shiftwidth=4
 set expandtab
 set smarttab
 set autoindent
+set cindent                     " 设置使用C/C++语言的自动缩进方式
+set cinoptions=g0,:0,N-s,(0     " 设置C/C++语言的具体缩进方式
 set smartindent
-set background=dark
-set mouse=a
 set mouse=v
 set pastetoggle=<F9>
-set formatoptions=c,q,r,t
 set backspace=2
-set ruler
-set textwidth=150
 set nowrap
 set showmatch
 set hlsearch
 set incsearch
 set smartcase
+set nobackup
+set noswapfile
+set autoread
+set autowrite
 
-set laststatus=2
-set statusline+=%F
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 状态行(命令行)的显示
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 命令行（在状态行下）的高度，默以为1，这里是2
+set cmdheight=1
+"底部显示光标的位置的状态行
+set ruler
+" 增强模式中的命令行自动完成操纵
+set wildmenu
+" 命令行显示输入的命令
+set showcmd
+" 命令行显示vim当前模式
+set showmode
+set statusline=%<%f\ %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ %-14.(%l,%c%V%)\ %P
+" 开启状态栏信息
+set laststatus=2 "总显示最后一个窗口的状态行；设为1则窗口数多于一个的时候显示最后一个窗口的状态行；0不显示最后一个窗口的状态行
 
-set path+=/usr/include
-set path+=/usr/local/include
-set path+=/usr/local/opt
-set path+=/usr/include/c++/4.2.1
+" 打开文件自动定位到最后编辑的位置
+"autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 filetype plugin indent on
 syntax on
+

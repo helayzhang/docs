@@ -10,9 +10,9 @@ export ZSH="/Users/zhanghao/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="robbyrussell"
+ZSH_THEME="robbyrussell"
 #ZSH_THEME="agnoster"
-ZSH_THEME="powerlevel9k/powerlevel9k"
+#ZSH_THEME="powerlevel9k/powerlevel9k"
 #ZSH_THEME="avit"
 
 # Set list of themes to pick from when loading at random
@@ -102,28 +102,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
-alias cls='clear'
-alias ll='ls -al'
-alias la='ls -a'
-alias vi='vim'
-alias javac="javac -J-Dfile.encoding=utf8"
-alias grep="ggrep --color=auto"
-alias -s gz='tar -xzvf'
-alias -s tgz='tar -xzvf'
-alias -s zip='unzip'
-alias -s bz2='tar -xjvf'
 
 if [ -f ~/.my_profile ]; then
     source ~/.my_profile
 fi
-
-DEFAULT_USER=zhanghao
-
-git_prompt_info() {}
-
-HISTSIZE=10000
-SAVEHIST=10000
-
-# zprof
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

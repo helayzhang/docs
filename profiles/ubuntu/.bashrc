@@ -101,5 +101,3 @@ fi
 if [ -f ~/.my_profile ]; then
     . ~/.my_profile
 fi
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash

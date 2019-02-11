@@ -24,7 +24,8 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 
 "search
 Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
-Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 "c/cpp autocomplete
 Plug 'Valloric/YouCompleteMe'           "code auto complete - many language
@@ -51,6 +52,10 @@ Plug 'skywind3000/asyncrun.vim'         "async run shell
 Plug 'scrooloose/nerdtree'              "tree - file choose
 Plug 'scrooloose/nerdcommenter'         "code comment
 
+Plug 'cespare/vim-toml'
+
+"底部状态栏
+"Plug 'powerline/powerline'
 Plug 'vim-airline/vim-airline'
 
 call plug#end()
@@ -122,13 +127,14 @@ let g:ycm_complete_in_strings = 0                             " 在字符串输�
 let g:ycm_collect_identifiers_from_comments_and_strings = 0   " 注释和字符串中的文字也会被收入补全
 let g:ycm_show_diagnostics_ui = 0                             " 禁用语法检查
 
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>" |            " 回车即选中当前项
+"inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>" |            " 回车即选中当前项
 
 let g:ycm_semantic_triggers =  {
            \ 'c,cpp,python,java,erlang,perl': ['re!\w{2}'],
            \ 'cs,lua,javascript': ['re!\w{2}'],
            \ }
 
+"nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
 "nnoremap gd :YcmCompleter GoToDefinitionElseDeclaration<CR>
 "nnoremap gd :YcmCompleter GoToDefinition<CR>
 nnoremap gd :YcmCompleter GoTo<CR>
@@ -139,7 +145,7 @@ nnoremap gd :YcmCompleter GoTo<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:rehash256 = 1
 let g:molokai_original = 1
-"silent! colorscheme molokai
+"colorscheme molokai
 colorscheme elflord
 
 let g:cpp_class_scope_highlight = 1
