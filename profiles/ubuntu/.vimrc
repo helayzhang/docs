@@ -7,15 +7,6 @@ let mapleader=","
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-"Ctrl-p 文件搜索(子目录)
-"Shift-f 文件搜索(最近打开)
-"Shift-p 函数搜索
-"Shift-m 符号搜索
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 call plug#begin('~/.vim/plugged')
 
 "color
@@ -24,8 +15,8 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 
 "search
 Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+"Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+"Plug 'junegunn/fzf.vim'
 
 "c/cpp autocomplete
 Plug 'Valloric/YouCompleteMe'           "code auto complete - many language
@@ -145,8 +136,11 @@ nnoremap gd :YcmCompleter GoTo<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:rehash256 = 1
 let g:molokai_original = 1
-"colorscheme molokai
-colorscheme elflord
+colorscheme molokai
+"colorscheme elflord
+
+"let g:solarized_termcolors=256
+"colorscheme solarized
 
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
@@ -159,6 +153,7 @@ let c_no_curly_error=1
 highlight PMenu ctermfg=0 ctermbg=242 guifg=black guibg=darkgrey
 highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black
 
+"Leaderf colors
 highlight Lf_hl_match gui=bold guifg=Blue cterm=bold ctermfg=21
 highlight Lf_hl_matchRefine  gui=bold guifg=Magenta cterm=bold ctermfg=201
 
@@ -233,16 +228,15 @@ endif
 """ search - LeaderF
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:Lf_ShortcutF = '<c-p>'
-"let g:Lf_ShortcutB = '<s-n>'
-noremap <s-f> :LeaderfMru<cr>
+"let g:Lf_ShortcutB = '<c-b>'
 noremap <s-p> :LeaderfFunction!<cr>
+"noremap <s-f> :LeaderfMru<cr>
 "noremap <s-n> :LeaderfBuffer<cr>
-noremap <s-m> :LeaderfTag<cr>
+"noremap <s-m> :LeaderfTag<cr>
 let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
-
 let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
 let g:Lf_WorkingDirectoryMode = 'Ac'
-let g:Lf_WindowHeight = 0.40
+let g:Lf_WindowHeight = 0.30
 let g:Lf_CacheDirectory = expand('~/.vim/cache')
 let g:Lf_ShowRelativePath = 0
 let g:Lf_HideHelp = 1
@@ -250,6 +244,16 @@ let g:Lf_StlColorscheme = 'powerline'
 let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
 let g:Lf_Ctags = '/usr/local/bin/ctags'
 
+" search word under cursor, the pattern is treated as regex, and enter normal mode directly
+noremap <c-f> :<c-u><c-r>=printf("Leaderf! rg --stayOpen -e %s ", expand("<cword>"))<CR>
+
+" 用fzf实现Ag搜索
+"command! -bang -nargs=* Ag
+"  \ call fzf#vim#ag(<q-args>,
+"  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+"  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+"  \                 <bang>0)
+"nnoremap <silent> <leader>f :Ag<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """ markdown
