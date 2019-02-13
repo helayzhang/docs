@@ -245,7 +245,7 @@ let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
 let g:Lf_Ctags = '/usr/local/bin/ctags'
 
 " search word under cursor, the pattern is treated as regex, and enter normal mode directly
-noremap <c-f> :<c-u><c-r>=printf("Leaderf! rg --stayOpen -e %s ", expand("<cword>"))<CR>
+noremap <s-f> :<c-u><c-r>=printf("Leaderf! rg --stayOpen -e %s ", expand("<cword>"))<CR>
 
 " 用fzf实现Ag搜索
 "command! -bang -nargs=* Ag
