@@ -16,7 +16,7 @@ API网关的调用方式：
     例：curl -d 'service=go.micro.srv.greeter' -d 'method=Say.Hello' -d 'request={"name": "John"}' http://localhost:8080/rpc
 
 3. 通过RPC Handler直接转发给RPC Service (POST + Json Body)
-    例：curl -H 'Content-Type: application/json'-d '{"service": "go.micro.srv.greeter", "method": "Say.Hello", "request": {"name": "John"}}' http://localhost:8080/rpc
+    例：curl -H 'Content-Type: application/json' -d '{"service": "go.micro.srv.greeter", "method": "Say.Hello", "request": {"name": "John"}}' http://localhost:8080/rpc
 
 ==========================
 

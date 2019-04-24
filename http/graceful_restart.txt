@@ -1,0 +1,29 @@
+实现Gracefully Restart的方式：
+1. 设置SO_REUSEPORT，并允许多个进程同时bind一个端口
+2. 通过fork/exec的方式，将父进程的FD传递给子进程，子进程对FD进行listen，然后通知父进程close FD。
+
+方式1存在部分连接丢失问题
+方式2和supervisor不兼容，因为supervisor的实现原理是父子进程的关系，当服务进程fork出子进程并退出后，supervisor监控的进程就消失了，无法用孙进程取代。因此虽然supervisor当前支持给进程发特定信号，但仍无法实现fork的方式的restart。
+
+参考：
+golang graceful实现设计：https://gravitational.com/blog/golang-ssh-bastion-graceful-restarts/
+supervisor不支持fork/restart的方式：https://github.com/Supervisor/supervisor/issues/53
+supervisor支持给进程发信号：https://github.com/onespacemedia/server-management/issues/55
+supervisor子进程监控实现原理：http://supervisord.org/subprocess.html
+
+
+========================================
+
+关于golang http server的Gracefully Shutdown：
+在golang1.8以前，官方库不支持gracefully shutdown，1.8引入httpserver.Shutdown()。
+1.8以前，facebookgo提供了一个库支持了gracefully shutdown. https://github.com/facebookgo/httpdown
+
+========================================
+
+不考虑兼容supervisor的话，golang http实现gracefully restart还是比较容易的，思路如下：
+1. 父进程收到外部SIGUSR1信号，开始graceful restart处理：fork子进程，并将listen的fd告诉子进程
+2. 子进程开始监听该fd，此时父子进程同时监听端口，同时处理请求
+3. 子进程监听成功后，给父进程发SIGTERM信号，父进程收到信号后，开始gracefully shutdown处理（停止监听端口，把剩余请求处理完后父进程自己退出）
+4. 子进程完成对父进程的替换
+
+facebookgo的https://github.com/facebookgo/grace库对http和net进行了封装，支持gracefully restart。

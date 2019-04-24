@@ -1,0 +1,25 @@
+CentOS7安装gcc7.3
+	sudo yum install centos-release-scl
+	sudo yum install devtoolset-7-gcc*
+	# .bash_profile
+	source scl_source enable devtoolset-7
+
+CentOS7更新cmake
+	sudo yum remove cmake -y
+	wget https://github.com/Kitware/CMake/releases/download/v3.14.0-rc2/cmake-3.14.0-rc2.tar.gz
+	./bootstrap
+	make
+	make install
+
+CentOS7更新java1.8
+	wget https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.rpm?AuthParam=1551083200_473374ea75807f5fc647c73a392e639e -O jdk-8u201-linux-x64.rpm
+	rpm -ivh jdk-8u201-linux-x64.rpm
+	export JAVA_HOME=/usr/java/default/
+	export PATH=$PATH:$JAVA_HOME/bin
+
+CentOS7搭建zookeeper
+	安装jdk1.8
+	下载zookeeper
+	修改conf/zoo.cfg
+	./bin/zkServer.sh start
+	./bin/zkServer.sh status

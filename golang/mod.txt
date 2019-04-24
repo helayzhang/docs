@@ -1,0 +1,48 @@
+======================================================
+编译模式
+======================================================
+GOPATH mode
+    从$GOPATH下（以及vendor目录下）搜索目标程序的依赖包
+module-aware mode
+    从go mod命令的缓存目录（$GOPATH/pkg/mod）下搜索对应版本的依赖包
+
+
+======================================================
+开关 GO111MODULE
+======================================================
+auto 
+    根据目录下是否包含go.mod决定
+off 
+    GOPATH mode
+on 
+    module-aware mode
+
+export GO111MODULE=on
+
+
+======================================================
+// go.mod
+======================================================
+module hello
+
+
+======================================================
+命令
+======================================================
+输出build list
+    go list -m -json all 
+    go list -m all
+
+指定依赖特定库的特定版本
+    go mod -require=bitbucket.org/bigwhite/c@v1.0.0
+    go mod -require=bitbucket.org/bigwhite/d@v1.1.0
+    go mod -require='bitbucket.org/bigwhite/c@>=v1.1.0' 支持正则表达式，算法为选择最接近于比较目标的版本(tagged version)
+
+将依赖copy到root module dir的vendor下
+    go mod -vendor
+
+在module-aware mode模式下，只用vendor下的package来构建
+    go build -mod=vendor
+
+
+另：go 1.11之前的go compiler不支持在GOPATH之外使用vendor机制。

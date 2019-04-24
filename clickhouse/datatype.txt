@@ -1,0 +1,5 @@
+=================================
+array
+=================================
+
+CREATE TABLE array_test ( Id UInt64, Books Array(UInt64), Time DateTime ) ENGINE = MergeTree() PARTITION BY toYYYYMMDD(Time) ORDER BY (Id) SETTINGS index_granularity=8192;

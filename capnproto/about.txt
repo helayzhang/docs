@@ -1,0 +1,24 @@
+Cap’n Proto gets a perfect score because there is no encoding/decoding step.
+    Cap'n Proto没有encoding/decoding操作。
+
+The Cap’n Proto encoding is appropriate both as a data interchange format and an in-memory representation, so once your structure is built, you can simply write the bytes straight out to disk!
+    Cap'n Proto同时适用于作为一种数据交换格式、或数据在内存里的表达形式，因此一旦数据结构构成以后，你可以直接把数据写到磁盘。
+
+The encoding is defined byte-for-byte independent of any platform. However, it is designed to be efficiently manipulated on common modern CPUs. 
+    编码设计成字节级别的平台无依赖。事实上它被设计为可以被现代CPU高效处理。
+
+Data is arranged like a compiler would arrange a struct – with fixed widths, fixed offsets, and proper alignment. Variable-sized elements are embedded as pointers. 
+Pointers are offset-based rather than absolute so that messages are position-independent. 
+Integers use little-endian byte order because most CPUs are little-endian, and even big-endian CPUs usually have instructions for reading little-endian data.
+    数据组织成类似编译器组织struct一样：有固定宽度、固定偏移、以及合适的对齐方式。可变大小的数据是用指针方式嵌入的。
+    指针是基于偏移而不是绝对位置，所以数据是位置无关的。
+    数字按小端字节序组织，因为大部分cpu是小端字节序，即使是大端字节序cpu一般也有指令来读取小端数据。
+
+New fields are always added to the end of a struct (or replace padding space), so existing field positions are unchanged.
+The recipient simply needs to do a bounds check when reading each field. 
+Fields are numbered in the order in which they were added, so Cap’n Proto always knows how to arrange them for backwards-compatibility.
+    新字段总是添加到struct的尾部的（或替代padding），因此已存的字段位置是不变的。
+    接收方在读取每个字段的时候只需要按照边界读取即可。
+    字段序号是按添加的顺序排序的，所以Cap'n Proto总是知道如何组织他们，以支持向后兼容。
+
+
