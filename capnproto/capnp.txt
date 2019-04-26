@@ -1,0 +1,36 @@
+Cap'n Proto自带一个命令行工具叫capnp，用于开发和吊事。用来：
+· 把Cap'n Proto的结构编译成多种语言的生产源码
+· 生成唯一类型ID
+· 把Cap'n Proto的二进制消息解码成可读的文本
+· 把用文本描述的Cap'n Proto的消息编码成二进制数据
+· 评估和提取Cap'n Proto的结构中定义的常量
+
+    capnp help
+
+Compiling Schemas
+
+    capnp compile -oc++ myschema.capnp
+
+    生成包含C++源码的myschema.capnp.h和myschema.capnp.c++。选项可以控制输出路径和import路径。
+    部分解释性语言并不一定需要生成源码。
+
+Decoding Messages
+
+    capnp decode myschema.capnp MyType < message.bin > message.txt
+
+    capnp decode从标准输入读取一个二进制的Cap'n Proto消息，并把它解码成一个可读的文本格式。默认情况下解析未压缩的，可以加上--packed选项针对压缩后的。
+    
+Encoding Messages
+
+    capnp encode myschema.capnp MyType < message.txt > message.bin
+
+    capnp encode和capnp decode是相反的，从标准输入读取一个文本描述的消息，然后编码成二进制（用--packed选项可以压缩）
+    在debug的时候非常有用，生成测试数据，或者对decode生成的结果进行微调。
+    你不应该长期依赖capnp encode来对用文本格式编写的数据进行编码，而应该用capnp eval命令，其更为强大。
+
+Evaluating Constants
+
+    capnp eval myschema.capnp myConstant
+
+    这个命令会打印myConstant的值，这是一个const定义，并且经过了变量替换。你还可以生成二进制格式--binary或--packed
+
