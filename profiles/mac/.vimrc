@@ -20,7 +20,7 @@ Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
 "golang autocomplete
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
-Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'stamblerre/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 
 "c/cpp autocomplete
 Plug 'Valloric/YouCompleteMe'           "code auto complete - many language
