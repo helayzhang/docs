@@ -26,5 +26,3 @@ alias gopath-reset='export GOPATH=~/codes/go'
 
 HISTSIZE=100000
 SAVEHIST=100000
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
