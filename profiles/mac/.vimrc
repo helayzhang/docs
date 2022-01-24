@@ -14,13 +14,13 @@ Plug 'tomasr/molokai'
 Plug 'octol/vim-cpp-enhanced-highlight'
 
 "search
-Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 "Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 "Plug 'junegunn/fzf.vim'
 
 "golang autocomplete
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
-Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'stamblerre/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 
 "c/cpp autocomplete
 Plug 'Valloric/YouCompleteMe'           "code auto complete - many language

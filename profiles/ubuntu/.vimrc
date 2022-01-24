@@ -14,7 +14,7 @@ Plug 'tomasr/molokai'
 Plug 'octol/vim-cpp-enhanced-highlight'
 
 "search
-Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 "Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 "Plug 'junegunn/fzf.vim'
 
