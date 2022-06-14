@@ -1,0 +1,21 @@
+Merging
+
+    合并items
+    
+    · 合并单次执行得到的items:    ItemList节点，将所有的输入items合并成一个item
+
+    · 合并来自不动节点的items:  Merge节点
+
+    · 合并来自多次执行得到的items
+
+Looping
+    
+    循环执行
+
+    · 节点默认会对每个输入的item执行一次
+
+    · Execute Once开关，打开后节点只执行第一个输入的item
+
+    创建循环体（加上IF节点用来判断循环结束）
+
+    Split In Batchs节点，用来批量循环执行。

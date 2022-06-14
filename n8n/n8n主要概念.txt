@@ -1,0 +1,33 @@
+Workflows（工作流）
+    工作流是一些nodes相互连接起来，并能够自动执行处理的流程。
+    工作流能否手动触发执行，也可以通过Trigger(触发器)节点触发。
+    当一个工作流开始后，会执行所有连接起来的并激活着的节点。
+    当工作流中所有节点全部处理完毕后，工作流才执行完成。
+
+    Workflow的激活：
+        包含Trigger节点或Webhook节点的工作流需要通过Active开关进行激活。
+
+    Workflow以json格式保存。
+
+Connections
+    Connections申明了节点之间的链接，用来节点时间的数据传递。
+
+Nodes
+    节点是一个入口，用来接受数据、处理数据、发送数据。节点能执行的数据操作包括筛选、重新组装、修改数据。
+    分为三类节点：
+        Core Nodes: 控制工作流的执行，提供API支持
+        Regular Nodes: 执行具体操作
+        Trigger Nodes: 启动工作流并提供初始数据
+            Core Trigger nodes: 在特定时间启动工作流，以时间间隔、或webhook调用来触发。
+            App Trigger nodes: 当一个App的特定事件发生时启动工作流。
+
+    Global Operations       删除 暂停 复制 执行操作
+    Global Settings         所有节点通用的设置
+    App-specific Parameters 根据不同node的功能，不同的参数设置
+
+Items
+    节点直接传递的数据以json数组形式发送。每个数组元素称为一个item。
+    节点对其输入的每个item进行操作。
+
+Sticky Notes
+    给工作流添加注解。
