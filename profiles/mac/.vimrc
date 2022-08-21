@@ -9,6 +9,12 @@ let mapleader=","
 
 call plug#begin('~/.vim/plugged')
 
+"vimwiki
+Plug 'vimwiki/vimwiki'
+
+"protobuf
+Plug 'uarun/vim-protobuf'
+
 "color
 Plug 'tomasr/molokai'
 Plug 'octol/vim-cpp-enhanced-highlight'
@@ -288,7 +294,7 @@ let g:Lf_ShowRelativePath = 0
 let g:Lf_HideHelp = 1
 let g:Lf_StlColorscheme = 'powerline'
 let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
-let g:Lf_Ctags = '/usr/local/bin/ctags'
+let g:Lf_Ctags = '/opt/homebrew/bin/ctags'                  "需要brew install universal-ctags
 
 " search word under cursor, the pattern is treated as regex, and enter normal mode directly
 noremap <s-f> :<c-u><c-r>=printf("Leaderf! rg --stayOpen -e %s ", expand("<cword>"))<CR>
@@ -356,6 +362,11 @@ set laststatus=2 "总显示最后一个窗口的状态行；设为1则窗口数�
 
 " 打开文件自动定位到最后编辑的位置
 "autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vimwiki
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md', 'custom_wiki2html': '~/.vim/plugged/vimwiki/autoload/vimwiki/customwiki2html.sh'}]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
