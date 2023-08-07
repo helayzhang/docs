@@ -1,4 +1,3 @@
-
 #环境变量
 export LC_CTYPE="en_US.UTF-8"
 export LANG="en_US.UTF-8"
@@ -37,3 +36,5 @@ SAVEHIST=100000
 
 ulimit -n 1000000
 ulimit -c unlimited
+
+source /root/.bazel/bin/bazel-complete.bash
