@@ -1,0 +1,153 @@
+1. 添加Greenplum管理用户
+groupadd -g 520 gpadmin
+useradd -g 520 -u 520 -m -d /home/gpadmin -s /bin/bash gpadmin
+mkdir -p /data/greenplum
+chown -R gpadmin:gpadmin /data/greenplum/
+passwd gpadmin
+(user@123)
+
+2. 修改网络映射
+vim /etc/hosts
+172.19.71.37    gp-master
+172.19.98.25    gp-datanode01
+172.19.98.26    gp-datanode02
+172.19.98.24    gp-datanode03
+
+3. 修改系统参数
+vim /etc/sysctl.conf
+kernel.shmmax = 500000000
+kernel.shmmni = 4096
+kernel.shmall = 4000000000
+kernel.sem = 1000 10240000 400 10240
+kernel.sysrq = 1
+kernel.core_uses_pid = 1
+kernel.msgmnb = 65536
+kernel.msgmax = 65536
+kernel.msgmni = 2048
+kernel.pid_max = 655360
+net.ipv4.tcp_syncookies = 1
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.conf.all.arp_filter = 1
+net.ipv4.ip_local_port_range = 10000 65535
+net.core.netdev_max_backlog = 10000
+net.core.rmem_default = 262144
+net.core.rmem_max = 2097152
+net.core.wmem_max = 2097152
+vm.overcommit_memory = 2
+vm.overcommit_ratio = 90
+vm.swappiness = 10
+
+sysctl -p
+
+4. 修改文件打开限制
+vim /etc/security/limits.conf
+* soft nofile 65535
+* hard nofile 65535
+* soft nproc 131072
+* hard nproc 131072
+
+5. 创建安装目录并赋予权限(重复)
+mkdir /data/greenplum
+chown -R gpadmin:gpadmin /data/greenplum/
+
+6. 安装gp依赖包
+yum install apr apr-util krb5-devel libyaml rsync zip libevent bzip2
+
+7. rpm安装
+scp gpadmin@172.19.71.37:/home/gpadmin/open-source-greenplum-db-6.21.2-rhel7-x86_64.rpm /home/gpadmin
+rpm -ivh --prefix=/data/greenplum/ /home/gpadmin/open-source-greenplum-db-6.21.2-rhel7-x86_64.rpm
+
+8. 添加环境变量
+vim /etc/profile
+export GP_HOME=/data/greenplum/greenplum-db
+
+9. 创建节点信息配置文件
+su gpadmin
+
+vim .bachrc
+source /data/greenplum/greenplum-db/greenplum_path.sh
+source ~/greenplum/greenplum-cc/gpcc_path.sh
+export MASTER_DATA_DIRECTORY=/data/greenplum/gpdata/master/gpseg-1
+export PGPORT=5432
+
+vim /home/gpadmin/all_hosts
+gp-master
+gp-datanode01
+gp-datanode02
+gp-datanode03
+
+vim /home/gpadmin/seg_hosts
+gp-datanode01
+gp-datanode02
+gp-datanode03
+
+10. 在各个节点生成ssh密钥
+ssh-keygen
+交换密钥：
+ssh-copy-id gp-master
+ssh-copy-id gp-datanode01
+ssh-copy-id gp-datanode02
+ssh-copy-id gp-datanode03
+
+或直接：gpssh-exkeys -f /home/gpadmin/all_hosts
+
+11. 验证节点之间ssh是否全部打通
+gpssh -f all_hosts
+=> pwd
+
+12. 初始化数据库
+# 在主节点创建master目录
+MASTER => mkdir -p /data/greenplum/gpdata/master
+# 在SLAVE(datanode03)上创建master目录
+SLAVE => mkdir -p /data/greenplum/gpdata/master
+# 在从节点创建primary目录和mirror目录
+gpssh -f seg_hosts
+=> mkdir -p /data/greenplum/gpdata/primary
+=> mkdir -p /data/greenplum/gpdata/mirror
+
+13. 初始化配置文件模板(master)
+vim /home/gpadmin/gpinitsystem_config
+
+(有mirror版)
+ARRAY_NAME="Greenplum"
+SEG_PREFIX=gpseg
+PORT_BASE=40000
+declare -a DATA_DIRECTORY=(/data/greenplum/gpdata/primary /data/greenplum/gpdata/primary /data/greenplum/gpdata/primary /data/greenplum/gpdata/primary)
+MASTER_HOSTNAME=gp-master
+MASTER_DIRECTORY=/data/greenplum/gpdata/master
+MASTER_PORT=5432
+TRUSTED_SHELL=/usr/bin/ssh
+CHECK_POINT_SEGMENTS=8
+ENCODING=UNICODE
+MIRROR_PORT_BASE=50000
+REPLICATION_PORT_BASE=41000
+MIRROR_REPLICATION_PORT_BASE=51000
+declare -a MIRROR_DATA_DIRECTORY=(/data/greenplum/gpdata/mirror /data/greenplum/gpdata/mirror /data/greenplum/gpdata/mirror /data/greenplum/gpdata/mirror)
+MACHINE_LIST_FILE=/home/gpadmin/seg_hosts
+
+(无mirror版)
+ARRAY_NAME="Greenplum"
+SEG_PREFIX=gpseg
+PORT_BASE=40000
+declare -a DATA_DIRECTORY=(/data/greenplum/gpdata/primary /data/greenplum/gpdata/primary /data/greenplum/gpdata/primary /data/greenplum/gpdata/primary)
+MASTER_HOSTNAME=gp-master
+MASTER_DIRECTORY=/data/greenplum/gpdata/master
+MASTER_PORT=5432
+TRUSTED_SHELL=/usr/bin/ssh
+CHECK_POINT_SEGMENTS=8
+ENCODING=UNICODE
+REPLICATION_PORT_BASE=41000
+MACHINE_LIST_FILE=/home/gpadmin/seg_hosts
+
+
+gpinitsystem -c /home/gpadmin/gpinitsystem_config -s gp-datanode03 -h /home/gpadmin/seg_hosts
+=====================================================================
+
+
+psql -d postgres
+psql -d lesscode
+psql -U lesscode -d lesscode -W
+
+

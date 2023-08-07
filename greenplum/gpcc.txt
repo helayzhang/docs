@@ -1,0 +1,37 @@
+1. 下载
+
+2. 配置pg_hba.conf
+vim /data/greenplum/gpdata/master/gpseg-1/pg_hba.conf
+host    all     gpmon   127.0.0.1/32    md5  
+host    all     gpmon   172.19.71.37/32 md5  
+host    all     gpmon   samenet md5
+local   lesscode        lesscode trust
+host    lesscode        lesscode 127.0.0.1/32   trust
+host    lesscode        lesscode 0.0.0.0/0      trust
+
+3. 配置.pgpass
+vim ~/.pgpass
+*:5432:gpperfmon:gpmon:gpmon
+*:5432:lesscode:lesscode:lesscode
+chmod 600 ~/.pgpass
+
+4. 重启gp
+gpstop -u
+
+5. 安装gpcc
+./gpccinstall-6.8.0 -W
+
+6. 安装metrics_collector插件
+cd /home/gpadmin/greenplum/greenplum-cc
+source gpcc-path.sh
+cd /home/gpadmin/greenplum/greenplum-cc/gppkg
+gppkg -i MetricsCollector-6.8.0_gp_6.21.0-rhel7-x86_64.gppkg
+
+# 修改greenplum数据库配置参数
+gpconfig -c shared_preload_libraries -v 'metrics_collector'
+gpconfig -c gp_enable_query_metrics -v on
+
+# 重启gpcc
+gpstop -M fast
+gpstart 
+gpcc start
